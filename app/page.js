@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Gamepad2, Search, Filter, Trophy, Users, Wifi } from 'lucide-react'
+import { Gamepad2, Search, Filter, Trophy, Users, Wifi, RefreshCw, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -14,10 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { toast } from 'sonner'
 
 export default function HomePage() {
   const [servers, setServers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   
@@ -36,6 +38,52 @@ export default function HomePage() {
       console.error('Error fetching servers:', error)
     } finally {
       setLoading(false)
+    }
+  }
+  
+  const refreshServerStatuses = async () => {
+    setRefreshing(true)
+    toast.info('Refreshing server statuses...')
+    
+    try {
+      // Refresh status for each server
+      const updates = await Promise.all(
+        servers.map(async (server) => {
+          try {
+            const response = await fetch(`/api/servers/${server.id}/status`)
+            if (response.ok) {
+              const status = await response.json()
+              return { id: server.id, ...status }
+            }
+          } catch (error) {
+            console.error(`Error refreshing ${server.id}:`, error)
+          }
+          return null
+        })
+      )
+      
+      // Update servers with new status
+      setServers(prevServers => 
+        prevServers.map(server => {
+          const update = updates.find(u => u && u.id === server.id)
+          if (update) {
+            return {
+              ...server,
+              status: update.online ? 'online' : 'offline',
+              onlinePlayers: update.players?.online || 0,
+              maxPlayers: update.players?.max || 0
+            }
+          }
+          return server
+        })
+      )
+      
+      toast.success('Server statuses refreshed!')
+    } catch (error) {
+      console.error('Error refreshing statuses:', error)
+      toast.error('Failed to refresh statuses')
+    } finally {
+      setRefreshing(false)
     }
   }
   
