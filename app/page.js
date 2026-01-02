@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Gamepad2, Search, Filter, Trophy, Users, Wifi, RefreshCw, Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Gamepad2, Search, Filter, Trophy, Users, Wifi, Plus, LogIn, UserPlus, LogOut, Shield } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,11 +16,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { createClient } from '@/lib/supabase'
 
 export default function HomePage() {
+  const router = useRouter()
   const [servers, setServers] = useState([])
+  const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
+  const [user, setUser] = useState(null)
+  const [userRole, setUserRole] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   
