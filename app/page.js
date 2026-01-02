@@ -29,8 +29,25 @@ export default function HomePage() {
   const [categoryFilter, setCategoryFilter] = useState('all')
   
   useEffect(() => {
+    checkUser()
     fetchServers()
+    fetchBanners()
   }, [])
+  
+  const checkUser = async () => {
+    const supabase = createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    setUser(user)
+    
+    if (user) {
+      // Get user role from database
+      const response = await fetch(`/api/auth/user/${user.id}`)
+      if (response.ok) {
+        const userData = await response.json()
+        setUserRole(userData.role)
+      }
+    }
+  }
   
   const fetchServers = async () => {
     try {
@@ -46,50 +63,25 @@ export default function HomePage() {
     }
   }
   
-  const refreshServerStatuses = async () => {
-    setRefreshing(true)
-    toast.info('Refreshing server statuses...')
-    
+  const fetchBanners = async () => {
     try {
-      // Refresh status for each server
-      const updates = await Promise.all(
-        servers.map(async (server) => {
-          try {
-            const response = await fetch(`/api/servers/${server.id}/status`)
-            if (response.ok) {
-              const status = await response.json()
-              return { id: server.id, ...status }
-            }
-          } catch (error) {
-            console.error(`Error refreshing ${server.id}:`, error)
-          }
-          return null
-        })
-      )
-      
-      // Update servers with new status
-      setServers(prevServers => 
-        prevServers.map(server => {
-          const update = updates.find(u => u && u.id === server.id)
-          if (update) {
-            return {
-              ...server,
-              status: update.online ? 'online' : 'offline',
-              onlinePlayers: update.players?.online || 0,
-              maxPlayers: update.players?.max || 0
-            }
-          }
-          return server
-        })
-      )
-      
-      toast.success('Server statuses refreshed!')
+      const response = await fetch('/api/banners/active')
+      if (response.ok) {
+        const data = await response.json()
+        setBanners(data)
+      }
     } catch (error) {
-      console.error('Error refreshing statuses:', error)
-      toast.error('Failed to refresh statuses')
-    } finally {
-      setRefreshing(false)
+      console.error('Error fetching banners:', error)
     }
+  }
+  
+  const handleSignOut = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setUser(null)
+    setUserRole(null)
+    toast.success('Logged out successfully')
+    router.refresh()
   }
   
   const filteredServers = servers.filter(server => {
