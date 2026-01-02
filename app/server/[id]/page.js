@@ -17,8 +17,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
-export default function ServerDetailPage({ params: paramsPromise }) {
-  const [params, setParams] = useState(null)
+export default function ServerDetailPage({ params }) {
+  const [serverId, setServerId] = useState(null)
   const [server, setServer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [copied, setCopied] = useState(false)
@@ -28,15 +28,23 @@ export default function ServerDetailPage({ params: paramsPromise }) {
   const [voteDialogOpen, setVoteDialogOpen] = useState(false)
   
   useEffect(() => {
-    if (resolvedParams?.id) {
+    const loadParams = async () => {
+      const resolvedParams = await params
+      setServerId(resolvedParams.id)
+    }
+    loadParams()
+  }, [params])
+  
+  useEffect(() => {
+    if (serverId) {
       fetchServer()
       checkVoteStatus()
     }
-  }, [resolvedParams?.id])
+  }, [serverId])
   
   const fetchServer = async () => {
     try {
-      const response = await fetch(`/api/servers/${resolvedParams.id}`)
+      const response = await fetch(`/api/servers/${serverId}`)
       if (response.ok) {
         const data = await response.json()
         setServer(data)
@@ -53,7 +61,7 @@ export default function ServerDetailPage({ params: paramsPromise }) {
   
   const checkVoteStatus = async () => {
     try {
-      const response = await fetch(`/api/servers/${resolvedParams.id}/can-vote`)
+      const response = await fetch(`/api/servers/${serverId}/can-vote`)
       if (response.ok) {
         const data = await response.json()
         setCanVote(data.canVote)
