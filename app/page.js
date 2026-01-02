@@ -35,7 +35,7 @@ export default function HomePage() {
   }, [])
   
   const checkUser = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     setUser(user)
     
@@ -76,7 +76,7 @@ export default function HomePage() {
   }
   
   const handleSignOut = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserSupabaseClient()
     await supabase.auth.signOut()
     setUser(null)
     setUserRole(null)
