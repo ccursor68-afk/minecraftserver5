@@ -313,7 +313,18 @@ export default function ServerDetailPage({ params }) {
           <div className="space-y-6">
             {/* Server Stats */}
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
-              <h3 className="text-xl font-bold mb-4">Server Stats</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold">Server Stats</h3>
+                <Button
+                  onClick={refreshServerStatus}
+                  disabled={refreshing}
+                  size="sm"
+                  variant="ghost"
+                  className="hover:bg-gray-800"
+                >
+                  <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+                </Button>
+              </div>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-gray-400">
