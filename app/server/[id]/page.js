@@ -83,6 +83,30 @@ export default function ServerDetailPage({ params }) {
     }
   }
   
+  const refreshServerStatus = async () => {
+    if (!serverId) return
+    
+    setRefreshing(true)
+    try {
+      const response = await fetch(`/api/servers/${serverId}/status`)
+      if (response.ok) {
+        const status = await response.json()
+        setServer(prev => ({
+          ...prev,
+          status: status.online ? 'online' : 'offline',
+          onlinePlayers: status.players?.online || 0,
+          maxPlayers: status.players?.max || 0
+        }))
+        toast.success('Server status updated!')
+      }
+    } catch (error) {
+      console.error('Error refreshing status:', error)
+      toast.error('Failed to refresh status')
+    } finally {
+      setRefreshing(false)
+    }
+  }
+  
   const handleVote = async () => {
     if (!canVote) {
       const hoursLeft = Math.ceil(voteTimeLeft / (1000 * 60 * 60))
