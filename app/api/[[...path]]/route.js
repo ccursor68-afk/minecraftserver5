@@ -1,104 +1,262 @@
-import { MongoClient } from 'mongodb'
-import { v4 as uuidv4 } from 'uuid'
 import { NextResponse } from 'next/server'
+import { supabase, initializeMockData } from '../../../lib/supabase.js'
+import { sendVotifierPacket, isVotifierConfigured } from '../../../lib/votifier.js'
+import { getServerStatus } from '../../../lib/mcstatus.js'
 
-// MongoDB connection
-let client
-let db
+// Helper to get client IP
+function getClientIp(request) {
+  const forwarded = request.headers.get('x-forwarded-for')
+  const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || '127.0.0.1'
+  return ip
+}
 
-async function connectToMongo() {
-  if (!client) {
-    client = new MongoClient(process.env.MONGO_URL)
-    await client.connect()
-    db = client.db(process.env.DB_NAME)
+// GET /api/servers - Get all servers sorted by votes
+export async function GET(request) {
+  const { pathname } = new URL(request.url)
+  
+  // GET /api/servers
+  if (pathname === '/api/servers') {
+    try {
+      await initializeMockData()
+      
+      const { data, error } = await supabase
+        .from('servers')
+        .select('*')
+        .order('voteCount', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching servers:', error)
+        return NextResponse.json({ error: 'Failed to fetch servers' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data || [])
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
   }
-  return db
-}
-
-// Helper function to handle CORS
-function handleCORS(response) {
-  response.headers.set('Access-Control-Allow-Origin', process.env.CORS_ORIGINS || '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  response.headers.set('Access-Control-Allow-Credentials', 'true')
-  return response
-}
-
-// OPTIONS handler for CORS
-export async function OPTIONS() {
-  return handleCORS(new NextResponse(null, { status: 200 }))
-}
-
-// Route handler function
-async function handleRoute(request, { params }) {
-  const { path = [] } = params
-  const route = `/${path.join('/')}`
-  const method = request.method
-
-  try {
-    const db = await connectToMongo()
-
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/root' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+  
+  // GET /api/servers/:id
+  const serverIdMatch = pathname.match(/^\/api\/servers\/([^\/]+)$/)
+  if (serverIdMatch) {
+    const serverId = serverIdMatch[1]
+    
+    try {
+      const { data, error } = await supabase
+        .from('servers')
+        .select('*')
+        .eq('id', serverId)
+        .single()
+      
+      if (error) {
+        console.error('Error fetching server:', error)
+        return NextResponse.json({ error: 'Server not found' }, { status: 404 })
+      }
+      
+      return NextResponse.json(data)
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-    // Root endpoint - GET /api/root (since /api/ is not accessible with catch-all)
-    if (route === '/' && method === 'GET') {
-      return handleCORS(NextResponse.json({ message: "Hello World" }))
+  }
+  
+  // GET /api/servers/:id/status
+  const statusMatch = pathname.match(/^\/api\/servers\/([^\/]+)\/status$/)
+  if (statusMatch) {
+    const serverId = statusMatch[1]
+    
+    try {
+      // Get server from database
+      const { data: server, error } = await supabase
+        .from('servers')
+        .select('ip, port')
+        .eq('id', serverId)
+        .single()
+      
+      if (error) {
+        return NextResponse.json({ error: 'Server not found' }, { status: 404 })
+      }
+      
+      // Get live status from mcstatus.io
+      const status = await getServerStatus(server.ip, server.port)
+      
+      // Update database with latest status
+      await supabase
+        .from('servers')
+        .update({
+          status: status.online ? 'online' : 'offline',
+          onlinePlayers: status.players.online,
+          maxPlayers: status.players.max,
+          updatedAt: new Date().toISOString()
+        })
+        .eq('id', serverId)
+      
+      return NextResponse.json(status)
+    } catch (error) {
+      console.error('Status check error:', error)
+      return NextResponse.json({ error: 'Failed to check status' }, { status: 500 })
     }
+  }
+  
+  // GET /api/servers/:id/can-vote
+  const canVoteMatch = pathname.match(/^\/api\/servers\/([^\/]+)\/can-vote$/)
+  if (canVoteMatch) {
+    const serverId = canVoteMatch[1]
+    const clientIp = getClientIp(request)
+    
+    try {
+      // Check if user voted in last 24 hours
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      
+      const { data: recentVotes, error } = await supabase
+        .from('votes')
+        .select('votedAt')
+        .eq('serverId', serverId)
+        .eq('voterIp', clientIp)
+        .gte('votedAt', twentyFourHoursAgo)
+        .order('votedAt', { ascending: false })
+        .limit(1)
+      
+      if (error) {
+        console.error('Error checking vote status:', error)
+        return NextResponse.json({ error: 'Failed to check vote status' }, { status: 500 })
+      }
+      
+      const canVote = !recentVotes || recentVotes.length === 0
+      let timeUntilNextVote = 0
+      
+      if (!canVote && recentVotes.length > 0) {
+        const lastVote = new Date(recentVotes[0].votedAt)
+        const nextVoteTime = new Date(lastVote.getTime() + 24 * 60 * 60 * 1000)
+        timeUntilNextVote = Math.max(0, nextVoteTime.getTime() - Date.now())
+      }
+      
+      return NextResponse.json({
+        canVote,
+        timeUntilNextVote,
+        lastVote: recentVotes && recentVotes.length > 0 ? recentVotes[0].votedAt : null
+      })
+    } catch (error) {
+      console.error('Can vote check error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
+}
 
-    // Status endpoints - POST /api/status
-    if (route === '/status' && method === 'POST') {
+// POST /api/servers/:id/vote
+export async function POST(request) {
+  const { pathname } = new URL(request.url)
+  
+  const voteMatch = pathname.match(/^\/api\/servers\/([^\/]+)\/vote$/)
+  if (voteMatch) {
+    const serverId = voteMatch[1]
+    const clientIp = getClientIp(request)
+    
+    try {
+      // Get request body
       const body = await request.json()
+      const { username = 'Anonymous', recaptchaToken } = body
       
-      if (!body.client_name) {
-        return handleCORS(NextResponse.json(
-          { error: "client_name is required" }, 
-          { status: 400 }
-        ))
-      }
-
-      const statusObj = {
-        id: uuidv4(),
-        client_name: body.client_name,
-        timestamp: new Date()
-      }
-
-      await db.collection('status_checks').insertOne(statusObj)
-      return handleCORS(NextResponse.json(statusObj))
-    }
-
-    // Status endpoints - GET /api/status
-    if (route === '/status' && method === 'GET') {
-      const statusChecks = await db.collection('status_checks')
-        .find({})
-        .limit(1000)
-        .toArray()
-
-      // Remove MongoDB's _id field from response
-      const cleanedStatusChecks = statusChecks.map(({ _id, ...rest }) => rest)
+      // TODO: Verify reCAPTCHA token when user adds it
+      // if (recaptchaToken) {
+      //   const isValid = await verifyRecaptcha(recaptchaToken)
+      //   if (!isValid) {
+      //     return NextResponse.json({ error: 'Invalid captcha' }, { status: 400 })
+      //   }
+      // }
       
-      return handleCORS(NextResponse.json(cleanedStatusChecks))
+      // Check if user can vote (24 hour cooldown)
+      const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+      
+      const { data: recentVotes, error: voteCheckError } = await supabase
+        .from('votes')
+        .select('votedAt')
+        .eq('serverId', serverId)
+        .eq('voterIp', clientIp)
+        .gte('votedAt', twentyFourHoursAgo)
+      
+      if (voteCheckError) {
+        console.error('Vote check error:', voteCheckError)
+        return NextResponse.json({ error: 'Failed to check vote eligibility' }, { status: 500 })
+      }
+      
+      if (recentVotes && recentVotes.length > 0) {
+        const lastVote = new Date(recentVotes[0].votedAt)
+        const nextVoteTime = new Date(lastVote.getTime() + 24 * 60 * 60 * 1000)
+        const hoursLeft = Math.ceil((nextVoteTime.getTime() - Date.now()) / (1000 * 60 * 60))
+        
+        return NextResponse.json(
+          { 
+            error: 'You can only vote once every 24 hours',
+            cooldown: true,
+            hoursLeft,
+            nextVoteTime: nextVoteTime.toISOString()
+          },
+          { status: 429 }
+        )
+      }
+      
+      // Get server details
+      const { data: server, error: serverError } = await supabase
+        .from('servers')
+        .select('*')
+        .eq('id', serverId)
+        .single()
+      
+      if (serverError || !server) {
+        return NextResponse.json({ error: 'Server not found' }, { status: 404 })
+      }
+      
+      // Insert vote record
+      const voteId = `vote_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      const { error: insertError } = await supabase
+        .from('votes')
+        .insert([{
+          id: voteId,
+          serverId,
+          voterIp: clientIp,
+          votedAt: new Date().toISOString()
+        }])
+      
+      if (insertError) {
+        console.error('Vote insert error:', insertError)
+        return NextResponse.json({ error: 'Failed to record vote' }, { status: 500 })
+      }
+      
+      // Update server vote count
+      const { error: updateError } = await supabase
+        .from('servers')
+        .update({ 
+          voteCount: server.voteCount + 1,
+          updatedAt: new Date().toISOString()
+        })
+        .eq('id', serverId)
+      
+      if (updateError) {
+        console.error('Vote count update error:', updateError)
+        return NextResponse.json({ error: 'Failed to update vote count' }, { status: 500 })
+      }
+      
+      // Send Votifier packet if configured
+      let votifierResult = null
+      if (isVotifierConfigured(server)) {
+        votifierResult = await sendVotifierPacket(server, username)
+      }
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Vote recorded successfully!',
+        voteCount: server.voteCount + 1,
+        votifier: votifierResult,
+        nextVoteTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+      })
+    } catch (error) {
+      console.error('Vote error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-
-    // Route not found
-    return handleCORS(NextResponse.json(
-      { error: `Route ${route} not found` }, 
-      { status: 404 }
-    ))
-
-  } catch (error) {
-    console.error('API Error:', error)
-    return handleCORS(NextResponse.json(
-      { error: "Internal server error" }, 
-      { status: 500 }
-    ))
   }
+  
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
-
-// Export all HTTP methods
-export const GET = handleRoute
-export const POST = handleRoute
-export const PUT = handleRoute
-export const DELETE = handleRoute
-export const PATCH = handleRoute
