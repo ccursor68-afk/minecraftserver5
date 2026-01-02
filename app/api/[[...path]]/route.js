@@ -145,9 +145,79 @@ export async function GET(request) {
   return NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
 
-// POST /api/servers/:id/vote
+// POST /api/servers - Create new server
+// POST /api/servers/:id/vote - Vote for server
 export async function POST(request) {
   const { pathname } = new URL(request.url)
+  
+  // POST /api/servers - Create new server
+  if (pathname === '/api/servers') {
+    try {
+      const body = await request.json()
+      
+      // Validate required fields
+      if (!body.name || !body.ip || !body.bannerUrl || !body.shortDescription || !body.longDescription) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      }
+      
+      // Generate server ID
+      const serverId = `server_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      // Create server object
+      const serverData = {
+        id: serverId,
+        name: body.name,
+        ip: body.ip,
+        port: body.port || 25565,
+        website: body.website || null,
+        discord: body.discord || null,
+        bannerUrl: body.bannerUrl,
+        shortDescription: body.shortDescription,
+        longDescription: body.longDescription,
+        version: body.version || '1.21',
+        category: body.category || 'Survival',
+        status: 'offline',
+        onlinePlayers: 0,
+        maxPlayers: 0,
+        voteCount: 0,
+        ownerId: null,
+        votifierIp: body.votifierIp || null,
+        votifierPort: body.votifierPort || null,
+        votifierPublicKey: body.votifierPublicKey || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      // Check server status immediately
+      try {
+        const status = await getServerStatus(serverData.ip, serverData.port)
+        if (status.online) {
+          serverData.status = 'online'
+          serverData.onlinePlayers = status.players.online
+          serverData.maxPlayers = status.players.max
+        }
+      } catch (error) {
+        console.error('Error checking initial server status:', error)
+      }
+      
+      // Insert into database
+      const { data, error } = await supabase
+        .from('servers')
+        .insert([serverData])
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error creating server:', error)
+        return NextResponse.json({ error: 'Failed to create server' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data, { status: 201 })
+    } catch (error) {
+      console.error('Server creation error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
   
   const voteMatch = pathname.match(/^\/api\/servers\/([^\/]+)\/vote$/)
   if (voteMatch) {
