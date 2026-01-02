@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase' // createBrowserSupabaseClient
+import { createBrowserSupabaseClient } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
