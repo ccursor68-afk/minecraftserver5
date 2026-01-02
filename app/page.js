@@ -124,11 +124,24 @@ export default function HomePage() {
               </Link>
             </nav>
             <div className="flex items-center gap-2">
+              <Button
+                onClick={refreshServerStatuses}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
+                className="border-gray-700 hover:border-green-500"
+              >
+                <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Link href="/submit">
+                <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                  <Plus className="w-4 h-4 mr-1" />
+                  Submit Server
+                </Button>
+              </Link>
               <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
                 🚪 Login
-              </Button>
-              <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                👤 Create Account
               </Button>
             </div>
           </div>
