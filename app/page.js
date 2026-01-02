@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Gamepad2, Search, Filter, Trophy, Users, Wifi, Plus, LogIn, UserPlus, LogOut, Shield } from 'lucide-react'
+import { Gamepad2, Search, Filter, Trophy, Users, Plus, LogIn, UserPlus, LogOut, Shield } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -16,12 +16,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase' // createBrowserSupabaseClient
+import { createBrowserSupabaseClient } from '@/lib/supabase'
 
 export default function HomePage() {
   const router = useRouter()
   const [servers, setServers] = useState([])
-  const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [userRole, setUserRole] = useState(null)
@@ -31,21 +30,24 @@ export default function HomePage() {
   useEffect(() => {
     checkUser()
     fetchServers()
-    fetchBanners()
   }, [])
   
   const checkUser = async () => {
-    const supabase = createBrowserSupabaseClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    setUser(user)
-    
-    if (user) {
-      // Get user role from database
-      const response = await fetch(`/api/auth/user/${user.id}`)
-      if (response.ok) {
-        const userData = await response.json()
-        setUserRole(userData.role)
+    try {
+      const supabase = createBrowserSupabaseClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      
+      if (user) {
+        // Get user role from database
+        const response = await fetch(`/api/auth/user/${user.id}`)
+        if (response.ok) {
+          const userData = await response.json()
+          setUserRole(userData.role)
+        }
       }
+    } catch (error) {
+      console.error('Auth check error:', error)
     }
   }
   
@@ -60,18 +62,6 @@ export default function HomePage() {
       console.error('Error fetching servers:', error)
     } finally {
       setLoading(false)
-    }
-  }
-  
-  const fetchBanners = async () => {
-    try {
-      const response = await fetch('/api/banners/active')
-      if (response.ok) {
-        const data = await response.json()
-        setBanners(data)
-      }
-    } catch (error) {
-      console.error('Error fetching banners:', error)
     }
   }
   
@@ -108,38 +98,55 @@ export default function HomePage() {
             </div>
             <nav className="hidden md:flex items-center gap-6 text-sm">
               <Link href="/" className="text-green-500 hover:text-green-400 transition-colors">
-                🎮 Minecraft Server List
+                🎮 Servers
               </Link>
-              <Link href="#" className="text-gray-400 hover:text-green-400 transition-colors">
-                💬 Discord
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-green-400 transition-colors">
-                📝 Blog
-              </Link>
-              <Link href="#" className="text-gray-400 hover:text-green-400 transition-colors">
-                ⭐ Featured
-              </Link>
+              {user && (
+                <Link href="/tickets" className="text-gray-400 hover:text-green-400 transition-colors">
+                  🎫 Support
+                </Link>
+              )}
+              {userRole === 'admin' && (
+                <Link href="/admin" className="text-yellow-500 hover:text-yellow-400 transition-colors">
+                  <Shield className="w-4 h-4 inline mr-1" />
+                  Admin
+                </Link>
+              )}
             </nav>
             <div className="flex items-center gap-2">
-              <Button
-                onClick={refreshServerStatuses}
-                disabled={refreshing}
-                variant="outline"
-                size="sm"
-                className="border-gray-700 hover:border-green-500"
-              >
-                <RefreshCw className={`w-4 h-4 mr-1 ${refreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
-              <Link href="/submit">
-                <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Submit Server
-                </Button>
-              </Link>
-              <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
-                🚪 Login
-              </Button>
+              {user ? (
+                <>
+                  <Link href="/submit">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <Plus className="w-4 h-4 mr-1" />
+                      Submit Server
+                    </Button>
+                  </Link>
+                  <Button 
+                    onClick={handleSignOut}
+                    variant="outline" 
+                    size="sm" 
+                    className="border-gray-700 hover:border-red-500"
+                  >
+                    <LogOut className="w-4 h-4 mr-1" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/auth/login">
+                    <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
+                      <LogIn className="w-4 h-4 mr-1" />
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/auth/register">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                      <UserPlus className="w-4 h-4 mr-1" />
+                      Sign Up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
