@@ -91,7 +91,7 @@ export default function ServerDetailPage({ params }) {
     
     setVoting(true)
     try {
-      const response = await fetch(`/api/servers/${resolvedParams.id}/vote`, {
+      const response = await fetch(`/api/servers/${serverId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
