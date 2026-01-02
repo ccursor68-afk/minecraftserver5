@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { Gamepad2, Copy, Check, Users, Wifi, Globe, MessageCircle, ArrowLeft, ExternalLink } from 'lucide-react'
+import { Gamepad2, Copy, Check, Users, Wifi, Globe, MessageCircle, ArrowLeft, ExternalLink, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -21,6 +21,7 @@ export default function ServerDetailPage({ params }) {
   const [serverId, setServerId] = useState(null)
   const [server, setServer] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [copied, setCopied] = useState(false)
   const [voting, setVoting] = useState(false)
   const [canVote, setCanVote] = useState(true)
