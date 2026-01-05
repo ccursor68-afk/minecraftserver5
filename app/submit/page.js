@@ -502,6 +502,45 @@ export default function SubmitServerPage() {
     { number: 4, title: 'Votifier' }
   ]
   
+  // Show loading while checking auth
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-green-500 mx-auto mb-4" />
+          <p className="text-gray-400">Checking authentication...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Show login prompt if not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
+        <Card className="bg-[#0f0f0f] border-gray-800 p-8 max-w-md text-center">
+          <div className="mb-6">
+            <LogIn className="w-16 h-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Login Required</h2>
+            <p className="text-gray-400">You must be logged in to submit a server</p>
+          </div>
+          <div className="flex gap-3">
+            <Link href="/auth/login" className="flex-1">
+              <Button className="w-full bg-green-600 hover:bg-green-700">
+                Login
+              </Button>
+            </Link>
+            <Link href="/auth/register" className="flex-1">
+              <Button variant="outline" className="w-full border-gray-700">
+                Sign Up
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      </div>
+    )
+  }
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
       {/* Header */}
