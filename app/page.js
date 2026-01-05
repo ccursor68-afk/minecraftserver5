@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Gamepad2, Search, Filter, Trophy, Users, Plus, LogIn, UserPlus, LogOut, Shield } from 'lucide-react'
+import { Gamepad2, Search, Filter, Trophy, Users, Plus, LogIn, UserPlus, LogOut, Shield, ExternalLink } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,18 +18,45 @@ import {
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 
+// Game mode categories
+const GAME_MODES = [
+  { id: 'all', name: 'All', icon: '🎮' },
+  { id: 'Survival', name: 'Survival', icon: '🏕️' },
+  { id: 'Skyblock', name: 'Skyblock', icon: '🏝️' },
+  { id: 'Bedwars', name: 'Bedwars', icon: '🛏️' },
+  { id: 'Skywars', name: 'Skywars', icon: '⚔️' },
+  { id: 'Factions', name: 'Factions', icon: '⚔️' },
+  { id: 'Prison', name: 'Prison', icon: '🔒' },
+  { id: 'Creative', name: 'Creative', icon: '🎨' },
+  { id: 'Minigames', name: 'Minigames', icon: '🎯' },
+  { id: 'Network', name: 'Network', icon: '🌐' },
+  { id: 'Towny', name: 'Towny', icon: '🏘️' },
+  { id: 'PvP', name: 'PvP', icon: '⚔️' },
+]
+
+// Platform filters
+const PLATFORMS = [
+  { id: 'all', name: 'All Platforms', icon: '🎮', color: 'bg-gray-600' },
+  { id: 'java', name: 'Java', icon: '☕', color: 'bg-orange-600' },
+  { id: 'bedrock', name: 'Bedrock', icon: '🎮', color: 'bg-green-600' },
+  { id: 'crossplay', name: 'Crossplay', icon: '🔀', color: 'bg-blue-600' },
+]
+
 export default function HomePage() {
   const router = useRouter()
   const [servers, setServers] = useState([])
+  const [banners, setBanners] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [userRole, setUserRole] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
+  const [platformFilter, setPlatformFilter] = useState('all')
   
   useEffect(() => {
     checkUser()
     fetchServers()
+    fetchBanners()
   }, [])
   
   const checkUser = async () => {
@@ -64,6 +91,18 @@ export default function HomePage() {
       setLoading(false)
     }
   }
+
+  const fetchBanners = async () => {
+    try {
+      const response = await fetch('/api/banners/active')
+      if (response.ok) {
+        const data = await response.json()
+        setBanners(data)
+      }
+    } catch (error) {
+      console.error('Error fetching banners:', error)
+    }
+  }
   
   const handleSignOut = async () => {
     const supabase = createBrowserSupabaseClient()
@@ -76,12 +115,12 @@ export default function HomePage() {
   
   const filteredServers = servers.filter(server => {
     const matchesSearch = server.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         server.shortDescription.toLowerCase().includes(searchTerm.toLowerCase())
+                         server.shortDescription?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesCategory = categoryFilter === 'all' || server.category === categoryFilter
-    return matchesSearch && matchesCategory
+    // Platform filter logic - for now we show all since platform info might not be stored
+    const matchesPlatform = platformFilter === 'all' || true
+    return matchesSearch && matchesCategory && matchesPlatform
   })
-  
-  const categories = ['all', ...new Set(servers.map(s => s.category))]
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
@@ -154,6 +193,39 @@ export default function HomePage() {
           </div>
         </div>
       </header>
+
+      {/* Top Banner Ad Section */}
+      <section className="py-4 border-b border-gray-800 bg-gradient-to-r from-gray-900/50 to-gray-800/50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            {banners.length > 0 ? (
+              <a href={banners[0].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
+                <img 
+                  src={banners[0].imageUrl} 
+                  alt={banners[0].title}
+                  className="max-w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
+                  style={{ maxHeight: '90px' }}
+                />
+              </a>
+            ) : (
+              <div className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-800/50 rounded-lg p-4 text-center w-full max-w-3xl">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl">📢</span>
+                  <div>
+                    <p className="text-green-400 font-bold">Advertise Your Server Here!</p>
+                    <p className="text-gray-400 text-sm">Get more players by featuring your server in our banner section</p>
+                  </div>
+                  <Link href="/submit">
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 ml-4">
+                      Get Featured
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
       
       {/* Hero Section */}
       <section className="py-12 border-b border-gray-800">
@@ -186,9 +258,9 @@ export default function HomePage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map(cat => (
-                    <SelectItem key={cat} value={cat}>
-                      {cat === 'all' ? 'All Categories' : cat}
+                  {GAME_MODES.map(mode => (
+                    <SelectItem key={mode.id} value={mode.id}>
+                      {mode.icon} {mode.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -199,20 +271,45 @@ export default function HomePage() {
       </section>
       
       {/* Platform Filter */}
-      <section className="py-8 border-b border-gray-800">
+      <section className="py-6 border-b border-gray-800">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <p className="text-sm text-gray-400 mb-4">Filter by Platform</p>
-            <div className="flex justify-center gap-3">
-              <Button className="bg-orange-600 hover:bg-orange-700">
-                ☕ Java
-              </Button>
-              <Button className="bg-green-600 hover:bg-green-700">
-                🎮 Bedrock
-              </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                🔀 Crossplay
-              </Button>
+            <div className="flex justify-center gap-3 flex-wrap">
+              {PLATFORMS.map(platform => (
+                <Button
+                  key={platform.id}
+                  onClick={() => setPlatformFilter(platform.id)}
+                  className={`${platformFilter === platform.id ? platform.color : 'bg-gray-700'} hover:opacity-90`}
+                >
+                  {platform.icon} {platform.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Game Mode Filter */}
+      <section className="py-6 border-b border-gray-800 bg-gray-900/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-sm text-gray-400 mb-4">Filter by Game Mode</p>
+            <div className="flex justify-center gap-2 flex-wrap max-w-4xl mx-auto">
+              {GAME_MODES.map(mode => (
+                <Button
+                  key={mode.id}
+                  onClick={() => setCategoryFilter(mode.id)}
+                  variant={categoryFilter === mode.id ? 'default' : 'outline'}
+                  size="sm"
+                  className={categoryFilter === mode.id 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : 'border-gray-700 hover:border-green-500 hover:text-green-400'
+                  }
+                >
+                  {mode.icon} {mode.name}
+                </Button>
+              ))}
             </div>
           </div>
         </div>
@@ -231,11 +328,12 @@ export default function HomePage() {
           ) : filteredServers.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-400 text-lg">No servers found</p>
+              <p className="text-gray-500 text-sm mt-2">Try adjusting your filters</p>
             </div>
           ) : (
             <div className="space-y-4 max-w-5xl mx-auto">
               {filteredServers.map((server, index) => (
-                <Card key={server.id} className="bg-[#0f0f0f] border-gray-800 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/10">
+                <Card key={server.id} className="bg-[#0f0f0f] border-gray-800 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/10 relative overflow-hidden">
                   <Link href={`/server/${server.id}`}>
                     <div className="p-4 flex items-center gap-4">
                       {/* Rank */}
@@ -246,7 +344,7 @@ export default function HomePage() {
                       
                       {/* Featured Badge */}
                       {index < 6 && (
-                        <div className="absolute top-4 left-20">
+                        <div className="absolute top-2 left-20">
                           <Badge className="bg-orange-600 text-xs">FEATURED</Badge>
                         </div>
                       )}
@@ -256,7 +354,7 @@ export default function HomePage() {
                         <img
                           src={server.bannerUrl}
                           alt={server.name}
-                          className="w-[468px] h-[60px] object-cover rounded border border-gray-700"
+                          className="w-[300px] lg:w-[468px] h-[60px] object-cover rounded border border-gray-700"
                         />
                       </div>
                       
@@ -278,28 +376,26 @@ export default function HomePage() {
                       </div>
                       
                       {/* Stats */}
-                      <div className="flex-shrink-0 text-right space-y-2">
+                      <div className="flex-shrink-0 text-right space-y-2 hidden md:block">
                         <div className="flex items-center justify-end gap-2">
                           <div className={`w-2 h-2 rounded-full ${server.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                           <span className="text-sm font-medium">
-                            {server.onlinePlayers.toLocaleString()} players online
+                            {server.onlinePlayers?.toLocaleString() || 0} players
                           </span>
                         </div>
                         <div className="flex items-center justify-end gap-2 text-gray-400">
                           <Users className="w-4 h-4" />
                           <span className="text-xs">
-                            {server.onlinePlayers.toLocaleString()} / {server.maxPlayers.toLocaleString()}
+                            {server.onlinePlayers?.toLocaleString() || 0} / {server.maxPlayers?.toLocaleString() || 0}
                           </span>
                         </div>
                       </div>
                       
                       {/* Vote Button */}
                       <div className="flex-shrink-0">
-                        <Link href={`/server/${server.id}`}>
-                          <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-6">
-                            Join Now!
-                          </Button>
-                        </Link>
+                        <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-6">
+                          Join Now!
+                        </Button>
                         <p className="text-center text-xs text-gray-500 mt-1">{server.ip}</p>
                       </div>
                     </div>
@@ -308,6 +404,39 @@ export default function HomePage() {
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Bottom Banner Ad Section */}
+      <section className="py-6 border-t border-gray-800 bg-gradient-to-r from-gray-900/50 to-gray-800/50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center">
+            {banners.length > 1 ? (
+              <a href={banners[1].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
+                <img 
+                  src={banners[1].imageUrl} 
+                  alt={banners[1].title}
+                  className="max-w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
+                  style={{ maxHeight: '90px' }}
+                />
+              </a>
+            ) : (
+              <div className="bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-800/50 rounded-lg p-4 text-center w-full max-w-3xl">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl">🚀</span>
+                  <div>
+                    <p className="text-purple-400 font-bold">Boost Your Server Visibility!</p>
+                    <p className="text-gray-400 text-sm">Premium banner spots available - reach thousands of players daily</p>
+                  </div>
+                  <Link href="/submit">
+                    <Button size="sm" className="bg-purple-600 hover:bg-purple-700 ml-4">
+                      Learn More
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
       
