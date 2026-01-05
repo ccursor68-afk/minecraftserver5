@@ -350,6 +350,91 @@ export async function POST(request) {
     }
   }
   
+  // POST /api/tickets - Create new ticket
+  if (pathname === '/api/tickets') {
+    try {
+      const body = await request.json()
+      
+      if (!body.userId || !body.subject || !body.message) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      }
+      
+      const ticketId = `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      const { data, error } = await supabase
+        .from('tickets')
+        .insert([{
+          id: ticketId,
+          userId: body.userId,
+          serverId: body.serverId || null,
+          subject: body.subject,
+          message: body.message,
+          category: body.category || 'general',
+          status: 'open',
+          priority: body.priority || 'normal',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }])
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error creating ticket:', error)
+        return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data, { status: 201 })
+    } catch (error) {
+      console.error('Ticket creation error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  // POST /api/tickets/:id/reply - Add reply to ticket
+  const ticketReplyMatch = pathname.match(/^\/api\/tickets\/([^\/]+)\/reply$/)
+  if (ticketReplyMatch) {
+    const ticketId = ticketReplyMatch[1]
+    
+    try {
+      const body = await request.json()
+      
+      if (!body.userId || !body.message) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      }
+      
+      const replyId = `reply_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      const { data, error } = await supabase
+        .from('ticket_replies')
+        .insert([{
+          id: replyId,
+          ticketId,
+          userId: body.userId,
+          message: body.message,
+          isAdmin: body.isAdmin || false,
+          createdAt: new Date().toISOString()
+        }])
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error creating reply:', error)
+        return NextResponse.json({ error: 'Failed to create reply' }, { status: 500 })
+      }
+      
+      // Update ticket's updatedAt
+      await supabase
+        .from('tickets')
+        .update({ updatedAt: new Date().toISOString() })
+        .eq('id', ticketId)
+      
+      return NextResponse.json(data, { status: 201 })
+    } catch (error) {
+      console.error('Reply creation error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
   const voteMatch = pathname.match(/^\/api\/servers\/([^\/]+)\/vote$/)
   if (voteMatch) {
     const serverId = voteMatch[1]
