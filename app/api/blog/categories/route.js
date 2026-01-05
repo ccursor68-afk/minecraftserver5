@@ -1,20 +1,21 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../../lib/supabase.js'
+import { supabaseAdmin } from '../../../../lib/supabase.js'
 
 export async function GET() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('blog_categories')
       .select('*')
-      .eq('isActive', true)
       .order('position', { ascending: true })
     
     if (error) {
+      console.error('Error fetching categories:', error)
       return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 })
     }
     
     return NextResponse.json(data || [])
   } catch (error) {
+    console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -29,7 +30,7 @@ export async function POST(request) {
     
     const categoryId = `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('blog_categories')
       .insert([{
         id: categoryId,
@@ -50,11 +51,13 @@ export async function POST(request) {
       .single()
     
     if (error) {
+      console.error('Error creating category:', error)
       return NextResponse.json({ error: 'Failed to create category' }, { status: 500 })
     }
     
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
+    console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
