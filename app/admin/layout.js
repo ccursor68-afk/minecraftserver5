@@ -120,7 +120,7 @@ export default function AdminLayout({ children }) {
               className=\"w-full border-gray-700 hover:border-red-500 hover:text-red-500\"
             >
               <LogOut className=\"w-4 h-4 mr-2\" />
-              \u00c7\u0131k\u0131\u015f Yap
+              Logout
             </Button>
           </div>
         </div>
