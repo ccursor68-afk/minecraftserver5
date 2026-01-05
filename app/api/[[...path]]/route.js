@@ -171,8 +171,54 @@ export async function GET(request) {
 
 // POST /api/servers - Create new server
 // POST /api/servers/:id/vote - Vote for server
+// POST /api/auth/create-user - Create user in database
 export async function POST(request) {
   const { pathname } = new URL(request.url)
+  
+  // POST /api/auth/create-user - Create user record
+  if (pathname === '/api/auth/create-user') {
+    try {
+      const body = await request.json()
+      
+      if (!body.id || !body.email) {
+        return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      }
+      
+      // Check if user already exists
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', body.id)
+        .single()
+      
+      if (existingUser) {
+        return NextResponse.json({ message: 'User already exists' })
+      }
+      
+      // Create user
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{
+          id: body.id,
+          email: body.email,
+          role: 'user',
+          isActive: true,
+          createdAt: new Date().toISOString()
+        }])
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error creating user:', error)
+        return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data, { status: 201 })
+    } catch (error) {
+      console.error('Create user error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
   
   // POST /api/servers - Create new server
   if (pathname === '/api/servers') {
