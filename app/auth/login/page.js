@@ -34,8 +34,8 @@ export default function LoginPage() {
         toast.error(error.message)
       } else {
         toast.success('Welcome back!')
-        router.push('/')
-        router.refresh()
+        // Force full page reload to refresh auth state
+        window.location.href = '/'
       }
     } catch (error) {
       toast.error('Login failed')
