@@ -100,6 +100,9 @@ export default function HomePage() {
               <Link href="/" className="text-green-500 hover:text-green-400 transition-colors">
                 🎮 Servers
               </Link>
+              <Link href="/blog" className="text-gray-400 hover:text-green-400 transition-colors">
+                📰 Blog
+              </Link>
               {user && (
                 <Link href="/tickets" className="text-gray-400 hover:text-green-400 transition-colors">
                   🎫 Support
