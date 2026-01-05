@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
       <div className=\"mt-8\">
         <Card className=\"bg-[#0f0f0f] border-gray-800 p-6\">
-          <h2 className=\"text-2xl font-bold mb-4\">Ho\u015f Geldiniz</h2>
+          <h2 className=\"text-2xl font-bold mb-4\">Welcome</h2>
           <p className=\"text-gray-400\">
             Admin paneline ho\u015f geldiniz. Sol taraftaki men\u00fcden istedi\u011finiz b\u00f6l\u00fcme gidebilirsiniz.
           </p>
