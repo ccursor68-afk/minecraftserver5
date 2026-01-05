@@ -48,15 +48,19 @@ export default function CreateCategoryPage() {
         body: JSON.stringify(form)
       })
 
+      const data = await response.json()
+      
       if (response.ok) {
         toast.success('Category created successfully!')
         router.push('/admin/blog')
       } else {
-        const data = await response.json()
-        toast.error(data.error || 'Failed to create category')
+        const errorMessage = data.details || data.error || 'Failed to create category'
+        toast.error(errorMessage)
+        console.error('Category creation error:', data)
       }
     } catch (error) {
-      toast.error('Error creating category')
+      console.error('Category creation error:', error)
+      toast.error('Error creating category: ' + (error.message || 'Unknown error'))
     } finally {
       setLoading(false)
     }
