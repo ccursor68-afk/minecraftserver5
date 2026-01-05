@@ -166,6 +166,67 @@ export async function GET(request) {
     }
   }
   
+  // GET /api/tickets - Get user tickets
+  if (pathname === '/api/tickets') {
+    const { searchParams } = new URL(request.url)
+    const userId = searchParams.get('userId')
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('userId', userId)
+        .order('createdAt', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching tickets:', error)
+        return NextResponse.json({ error: 'Failed to fetch tickets' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data || [])
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  // GET /api/tickets/:id - Get ticket by ID
+  const ticketIdMatch = pathname.match(/^\/api\/tickets\/([^\/]+)$/)
+  if (ticketIdMatch) {
+    const ticketId = ticketIdMatch[1]
+    
+    try {
+      const { data: ticket, error: ticketError } = await supabase
+        .from('tickets')
+        .select('*')
+        .eq('id', ticketId)
+        .single()
+      
+      if (ticketError) {
+        return NextResponse.json({ error: 'Ticket not found' }, { status: 404 })
+      }
+      
+      // Get ticket replies
+      const { data: replies, error: repliesError } = await supabase
+        .from('ticket_replies')
+        .select('*')
+        .eq('ticketId', ticketId)
+        .order('createdAt', { ascending: true })
+      
+      return NextResponse.json({
+        ...ticket,
+        replies: replies || []
+      })
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
   return NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
 
