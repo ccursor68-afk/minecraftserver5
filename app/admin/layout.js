@@ -87,7 +87,7 @@ export default function AdminLayout({ children }) {
             <Gamepad2 className=\"w-8 h-8 text-yellow-500\" />
             <div>
               <h1 className=\"text-xl font-bold text-yellow-500\">ADMIN PANEL</h1>
-              <p className=\"text-xs text-gray-400\">Y\u00f6netim Paneli</p>
+              <p className=\"text-xs text-gray-400\">Management Panel</p>
             </div>
           </Link>
 
