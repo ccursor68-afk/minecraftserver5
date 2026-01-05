@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Gamepad2, ArrowLeft, ArrowRight, Check, Loader2, AlertCircle } from 'lucide-react'
+import { Gamepad2, ArrowLeft, ArrowRight, Check, Loader2, AlertCircle, LogIn } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -18,12 +18,15 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { createBrowserSupabaseClient } from '@/lib/supabase'
 
 const CATEGORIES = ['Survival', 'Skyblock', 'PvP', 'Creative', 'Roleplay', 'Network', 'Minigames', 'Other']
 const VERSIONS = ['1.21', '1.20.1', '1.19.4', '1.18.2', '1.17.1', '1.16.5', '1.12.2', '1.8.9']
 
 export default function SubmitServerPage() {
   const router = useRouter()
+  const [user, setUser] = useState(null)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [validatingIp, setValidatingIp] = useState(false)
