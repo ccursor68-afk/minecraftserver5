@@ -41,6 +41,7 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             role: 'user'
           }
@@ -48,10 +49,11 @@ export default function RegisterPage() {
       })
 
       if (error) {
+        console.error('Signup error:', error)
         toast.error(error.message)
-      } else {
+      } else if (data?.user) {
         // Create user in our database
-        await fetch('/api/auth/create-user', {
+        const response = await fetch('/api/auth/create-user', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -60,12 +62,18 @@ export default function RegisterPage() {
           })
         })
 
+        if (!response.ok) {
+          const errorData = await response.json()
+          console.error('Create user error:', errorData)
+        }
+
         toast.success('Account created! Welcome!')
         router.push('/')
         router.refresh()
       }
     } catch (error) {
-      toast.error('Registration failed')
+      console.error('Registration error:', error)
+      toast.error(`Registration failed: ${error.message || 'Unknown error'}`)
     } finally {
       setLoading(false)
     }
