@@ -227,6 +227,46 @@ export async function GET(request) {
     }
   }
   
+  // GET /api/admin/users - Get all users (admin only)
+  if (pathname === '/api/admin/users') {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('users')
+        .select('*')
+        .order('createdAt', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching users:', error)
+        return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data || [])
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  // GET /api/admin/tickets - Get all tickets (admin only)
+  if (pathname === '/api/admin/tickets') {
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('tickets')
+        .select('*')
+        .order('createdAt', { ascending: false })
+      
+      if (error) {
+        console.error('Error fetching tickets:', error)
+        return NextResponse.json({ error: 'Failed to fetch tickets' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data || [])
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
   return NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
 
