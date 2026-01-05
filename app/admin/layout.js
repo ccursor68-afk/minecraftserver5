@@ -25,7 +25,7 @@ export default function AdminLayout({ children }) {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        toast.error('Giri\u015f yapmal\u0131s\u0131n\u0131z')
+        toast.error('Please login')
         router.push('/auth/login')
         return
       }
@@ -35,7 +35,7 @@ export default function AdminLayout({ children }) {
       if (response.ok) {
         const userData = await response.json()
         if (userData.role !== 'admin') {
-          toast.error('Yetkisiz eri\u015fim')
+          toast.error('Unauthorized access')
           router.push('/')
           return
         }
