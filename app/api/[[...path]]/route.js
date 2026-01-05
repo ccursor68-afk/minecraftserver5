@@ -230,17 +230,44 @@ export async function GET(request) {
   // GET /api/admin/users - Get all users (admin only)
   if (pathname === '/api/admin/users') {
     try {
-      const { data, error } = await supabaseAdmin
-        .from('users')
-        .select('*')
-        .order('createdAt', { ascending: false })
+      // Get users from Supabase Auth (all registered users)
+      const { data: authData, error: authError } = await supabaseAdmin.auth.admin.listUsers()
       
-      if (error) {
-        console.error('Error fetching users:', error)
+      if (authError) {
+        console.error('Error fetching auth users:', authError)
         return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
       }
       
-      return NextResponse.json(data || [])
+      // Get users from public.users table for role info
+      const { data: publicUsers, error: publicError } = await supabaseAdmin
+        .from('users')
+        .select('*')
+      
+      // Create a map of public users by id for quick lookup
+      const publicUsersMap = {}
+      if (publicUsers) {
+        publicUsers.forEach(user => {
+          publicUsersMap[user.id] = user
+        })
+      }
+      
+      // Merge auth users with public users data
+      const users = authData.users.map(authUser => {
+        const publicUser = publicUsersMap[authUser.id]
+        return {
+          id: authUser.id,
+          email: authUser.email,
+          role: publicUser?.role || 'user',
+          isActive: publicUser?.isActive !== false,
+          createdAt: authUser.created_at,
+          lastSignIn: authUser.last_sign_in_at
+        }
+      })
+      
+      // Sort by createdAt descending
+      users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      
+      return NextResponse.json(users)
     } catch (error) {
       console.error('API Error:', error)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
