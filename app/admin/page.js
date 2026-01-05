@@ -18,11 +18,7 @@ export default function AdminDashboard() {
 
   const fetchStats = async () => {
     try {
-      const [serversRes, ticketsRes] = await Promise.all([
-        fetch('/api/servers'),
-        fetch('/api/tickets/all')
-      ])
-
+      const serversRes = await fetch('/api/servers')
       if (serversRes.ok) {
         const servers = await serversRes.json()
         setStats(prev => ({ ...prev, servers: servers.length }))
@@ -41,17 +37,17 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <h1 className=\"text-3xl font-bold mb-8\">Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
 
-      <div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6\">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => {
           const Icon = stat.icon
           return (
-            <Card key={index} className=\"bg-[#0f0f0f] border-gray-800 p-6\">
-              <div className=\"flex items-center justify-between\">
+            <Card key={index} className="bg-gray-900 border-gray-800 p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className=\"text-sm text-gray-400 mb-1\">{stat.label}</p>
-                  <p className=\"text-3xl font-bold\">{stat.value}</p>
+                  <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                  <p className="text-3xl font-bold">{stat.value}</p>
                 </div>
                 <Icon className={`w-12 h-12 ${stat.color}`} />
               </div>
@@ -60,10 +56,10 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      <div className=\"mt-8\">
-        <Card className=\"bg-[#0f0f0f] border-gray-800 p-6\">
-          <h2 className=\"text-2xl font-bold mb-4\">Welcome</h2>
-          <p className=\"text-gray-400\">
+      <div className="mt-8">
+        <Card className="bg-gray-900 border-gray-800 p-6">
+          <h2 className="text-2xl font-bold mb-4">Welcome</h2>
+          <p className="text-gray-400">
             Welcome to admin panel. Use the menu on the left to navigate to different sections.
           </p>
         </Card>
