@@ -355,38 +355,51 @@ export async function POST(request) {
     try {
       const body = await request.json()
       
+      console.log('Creating ticket with data:', body)
+      
       if (!body.userId || !body.subject || !body.message) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
       }
       
       const ticketId = `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       
+      const ticketData = {
+        id: ticketId,
+        userId: body.userId,
+        serverId: body.serverId || null,
+        subject: body.subject,
+        message: body.message,
+        category: body.category || 'general',
+        status: 'open',
+        priority: body.priority || 'normal',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+      
+      console.log('Inserting ticket:', ticketData)
+      
       const { data, error } = await supabase
         .from('tickets')
-        .insert([{
-          id: ticketId,
-          userId: body.userId,
-          serverId: body.serverId || null,
-          subject: body.subject,
-          message: body.message,
-          category: body.category || 'general',
-          status: 'open',
-          priority: body.priority || 'normal',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }])
+        .insert([ticketData])
         .select()
         .single()
       
       if (error) {
         console.error('Error creating ticket:', error)
-        return NextResponse.json({ error: 'Failed to create ticket' }, { status: 500 })
+        return NextResponse.json({ 
+          error: 'Failed to create ticket',
+          details: error.message 
+        }, { status: 500 })
       }
       
+      console.log('Ticket created successfully:', data)
       return NextResponse.json(data, { status: 201 })
     } catch (error) {
       console.error('Ticket creation error:', error)
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      return NextResponse.json({ 
+        error: 'Internal server error',
+        details: error.message 
+      }, { status: 500 })
     }
   }
   
