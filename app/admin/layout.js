@@ -30,7 +30,6 @@ export default function AdminLayout({ children }) {
         return
       }
       
-      // Check if admin
       const response = await fetch(`/api/auth/user/${user.id}`)
       if (response.ok) {
         const userData = await response.json()
@@ -54,13 +53,13 @@ export default function AdminLayout({ children }) {
   const handleSignOut = async () => {
     const supabase = createBrowserSupabaseClient()
     await supabase.auth.signOut()
-    router.push('/')
+    window.location.href = '/'
   }
 
   if (loading) {
     return (
-      <div className=\"min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center\">
-        <div className=\"inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-yellow-500\"></div>
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-yellow-500"></div>
       </div>
     )
   }
@@ -79,19 +78,18 @@ export default function AdminLayout({ children }) {
   ]
 
   return (
-    <div className=\"min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]\">
-      {/* Sidebar */}
-      <aside className=\"fixed left-0 top-0 h-full w-64 bg-[#0a0a0a] border-r border-gray-800 z-50\">
-        <div className=\"p-4\">
-          <Link href=\"/\" className=\"flex items-center gap-2 mb-8\">
-            <Gamepad2 className=\"w-8 h-8 text-yellow-500\" />
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+      <aside className="fixed left-0 top-0 h-full w-64 bg-black border-r border-gray-800 z-50">
+        <div className="p-4">
+          <Link href="/" className="flex items-center gap-2 mb-8">
+            <Gamepad2 className="w-8 h-8 text-yellow-500" />
             <div>
-              <h1 className=\"text-xl font-bold text-yellow-500\">ADMIN PANEL</h1>
-              <p className=\"text-xs text-gray-400\">Management Panel</p>
+              <h1 className="text-xl font-bold text-yellow-500">ADMIN PANEL</h1>
+              <p className="text-xs text-gray-400">Management Panel</p>
             </div>
           </Link>
 
-          <nav className=\"space-y-2\">
+          <nav className="space-y-2">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -105,7 +103,7 @@ export default function AdminLayout({ children }) {
                         : 'text-gray-400 hover:text-white hover:bg-gray-800'
                     }`}
                   >
-                    <Icon className=\"w-4 h-4 mr-2\" />
+                    <Icon className="w-4 h-4 mr-2" />
                     {item.label}
                   </Button>
                 </Link>
@@ -113,22 +111,21 @@ export default function AdminLayout({ children }) {
             })}
           </nav>
 
-          <div className=\"absolute bottom-4 left-4 right-4\">
+          <div className="absolute bottom-4 left-4 right-4">
             <Button
               onClick={handleSignOut}
-              variant=\"outline\"
-              className=\"w-full border-gray-700 hover:border-red-500 hover:text-red-500\"
+              variant="outline"
+              className="w-full border-gray-700 hover:border-red-500 hover:text-red-500"
             >
-              <LogOut className=\"w-4 h-4 mr-2\" />
+              <LogOut className="w-4 h-4 mr-2" />
               Logout
             </Button>
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className=\"ml-64 min-h-screen\">
-        <div className=\"p-8\">
+      <main className="ml-64 min-h-screen">
+        <div className="p-8">
           {children}
         </div>
       </main>
