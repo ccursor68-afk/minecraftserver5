@@ -599,3 +599,137 @@ export async function POST(request) {
   
   return NextResponse.json({ error: 'Not found' }, { status: 404 })
 }
+
+// PATCH - Update operations
+export async function PATCH(request) {
+  const { pathname } = new URL(request.url)
+  
+  // PATCH /api/admin/users/:id/role - Update user role
+  const userRoleMatch = pathname.match(/^\/api\/admin\/users\/([^\/]+)\/role$/)
+  if (userRoleMatch) {
+    const userId = userRoleMatch[1]
+    
+    try {
+      const body = await request.json()
+      const { role } = body
+      
+      if (!role || !['user', 'admin'].includes(role)) {
+        return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
+      }
+      
+      const { data, error } = await supabaseAdmin
+        .from('users')
+        .update({ role })
+        .eq('id', userId)
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error updating user role:', error)
+        return NextResponse.json({ error: 'Failed to update role' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data)
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  // PATCH /api/admin/tickets/:id/close - Close a ticket
+  const ticketCloseMatch = pathname.match(/^\/api\/admin\/tickets\/([^\/]+)\/close$/)
+  if (ticketCloseMatch) {
+    const ticketId = ticketCloseMatch[1]
+    
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('tickets')
+        .update({ 
+          status: 'closed',
+          updatedAt: new Date().toISOString()
+        })
+        .eq('id', ticketId)
+        .select()
+        .single()
+      
+      if (error) {
+        console.error('Error closing ticket:', error)
+        return NextResponse.json({ error: 'Failed to close ticket' }, { status: 500 })
+      }
+      
+      return NextResponse.json(data)
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
+}
+
+// DELETE - Delete operations
+export async function DELETE(request) {
+  const { pathname } = new URL(request.url)
+  
+  // DELETE /api/admin/servers/:id - Delete a server
+  const serverDeleteMatch = pathname.match(/^\/api\/admin\/servers\/([^\/]+)$/)
+  if (serverDeleteMatch) {
+    const serverId = serverDeleteMatch[1]
+    
+    try {
+      // First delete related votes
+      await supabaseAdmin
+        .from('votes')
+        .delete()
+        .eq('serverId', serverId)
+      
+      // Then delete the server
+      const { error } = await supabaseAdmin
+        .from('servers')
+        .delete()
+        .eq('id', serverId)
+      
+      if (error) {
+        console.error('Error deleting server:', error)
+        return NextResponse.json({ error: 'Failed to delete server' }, { status: 500 })
+      }
+      
+      return NextResponse.json({ success: true, message: 'Server deleted successfully' })
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  // DELETE /api/admin/tickets/:id - Delete a ticket
+  const ticketDeleteMatch = pathname.match(/^\/api\/admin\/tickets\/([^\/]+)$/)
+  if (ticketDeleteMatch) {
+    const ticketId = ticketDeleteMatch[1]
+    
+    try {
+      // First delete related replies
+      await supabaseAdmin
+        .from('ticket_replies')
+        .delete()
+        .eq('ticketId', ticketId)
+      
+      // Then delete the ticket
+      const { error } = await supabaseAdmin
+        .from('tickets')
+        .delete()
+        .eq('id', ticketId)
+      
+      if (error) {
+        console.error('Error deleting ticket:', error)
+        return NextResponse.json({ error: 'Failed to delete ticket' }, { status: 500 })
+      }
+      
+      return NextResponse.json({ success: true, message: 'Ticket deleted successfully' })
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
+  return NextResponse.json({ error: 'Not found' }, { status: 404 })
+}
