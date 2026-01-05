@@ -1,31 +1,31 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../../lib/supabase.js'
+import { supabaseAdmin } from '../../../../lib/supabase.js'
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const categorySlug = searchParams.get('categorySlug')
   
   try {
-    let query = supabase
+    let query = supabaseAdmin
       .from('blog_posts')
-      .select('*, blog_categories!inner(slug)')
-      .eq('status', 'published')
+      .select('*')
       .order('isPinned', { ascending: false })
       .order('createdAt', { ascending: false })
     
     if (categorySlug) {
-      query = query.eq('blog_categories.slug', categorySlug)
+      query = query.eq('categorySlug', categorySlug)
     }
     
     const { data, error } = await query
     
     if (error) {
-      console.error('Error:', error)
+      console.error('Error fetching posts:', error)
       return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 })
     }
     
     return NextResponse.json(data || [])
   } catch (error) {
+    console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -41,7 +41,7 @@ export async function POST(request) {
     const postId = `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const slug = body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('blog_posts')
       .insert([{
         id: postId,
@@ -64,19 +64,13 @@ export async function POST(request) {
       .single()
     
     if (error) {
-      console.error('Error:', error)
+      console.error('Error creating post:', error)
       return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
     }
     
-    // Update category topic count
-    await supabase.rpc('increment', {
-      table_name: 'blog_categories',
-      row_id: body.categoryId,
-      column_name: 'topicCount'
-    })
-    
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
+    console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
