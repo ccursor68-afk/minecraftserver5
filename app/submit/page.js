@@ -56,6 +56,30 @@ export default function SubmitServerPage() {
     votifierPublicKey: ''
   })
   
+  useEffect(() => {
+    checkAuth()
+  }, [])
+  
+  const checkAuth = async () => {
+    try {
+      const supabase = createBrowserSupabaseClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (!user) {
+        toast.error('You must be logged in to submit a server')
+        router.push('/auth/login')
+        return
+      }
+      
+      setUser(user)
+    } catch (error) {
+      console.error('Auth check error:', error)
+      router.push('/auth/login')
+    } finally {
+      setCheckingAuth(false)
+    }
+  }
+  
   const updateFormData = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
