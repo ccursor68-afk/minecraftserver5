@@ -250,7 +250,7 @@ export async function POST(request) {
         onlinePlayers: 0,
         maxPlayers: 0,
         voteCount: 0,
-        ownerId: null,
+        ownerId: body.ownerId || null,
         votifierIp: body.votifierIp || null,
         votifierPort: body.votifierPort || null,
         votifierPublicKey: body.votifierPublicKey || null,
