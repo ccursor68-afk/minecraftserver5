@@ -71,11 +71,11 @@ export default function AdminLayout({ children }) {
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/admin/servers', label: 'Sunucular', icon: Server },
-    { href: '/admin/users', label: 'Kullan\u0131c\u0131lar', icon: Users },
-    { href: '/admin/tickets', label: 'Destek', icon: Ticket },
+    { href: '/admin/servers', label: 'Servers', icon: Server },
+    { href: '/admin/users', label: 'Users', icon: Users },
+    { href: '/admin/tickets', label: 'Support', icon: Ticket },
     { href: '/admin/blog', label: 'Blog', icon: FileText },
-    { href: '/admin/banners', label: 'Banner', icon: Image },
+    { href: '/admin/banners', label: 'Banners', icon: Image },
   ]
 
   return (
