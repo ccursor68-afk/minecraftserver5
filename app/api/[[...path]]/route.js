@@ -14,6 +14,30 @@ function getClientIp(request) {
 export async function GET(request) {
   const { pathname } = new URL(request.url)
   
+  // GET /api/auth/user/:id - Get user by ID
+  const userIdMatch = pathname.match(/^\/api\/auth\/user\/([^\/]+)$/)
+  if (userIdMatch) {
+    const userId = userIdMatch[1]
+    
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, role, isActive')
+        .eq('id', userId)
+        .single()
+      
+      if (error) {
+        console.error('Error fetching user:', error)
+        return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      }
+      
+      return NextResponse.json(data)
+    } catch (error) {
+      console.error('API Error:', error)
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    }
+  }
+  
   // GET /api/servers
   if (pathname === '/api/servers') {
     try {
