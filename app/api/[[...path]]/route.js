@@ -644,6 +644,34 @@ export async function PATCH(request) {
         return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
       }
       
+      // First check if user exists in public.users
+      const { data: existingUser } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .single()
+      
+      if (!existingUser) {
+        // User doesn't exist in public.users, get their info from auth and create them
+        const { data: authData } = await supabaseAdmin.auth.admin.getUserById(userId)
+        
+        if (authData?.user) {
+          // Create user in public.users table
+          await supabaseAdmin
+            .from('users')
+            .insert([{
+              id: userId,
+              email: authData.user.email,
+              role: role,
+              isActive: true,
+              createdAt: new Date().toISOString()
+            }])
+        }
+        
+        return NextResponse.json({ id: userId, role: role })
+      }
+      
+      // Update existing user
       const { data, error } = await supabaseAdmin
         .from('users')
         .update({ role })
