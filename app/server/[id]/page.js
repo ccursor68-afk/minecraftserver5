@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, use } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { Gamepad2, Copy, Check, Users, Wifi, Globe, MessageCircle, ArrowLeft, ExternalLink, RefreshCw } from 'lucide-react'
@@ -18,7 +18,8 @@ import {
 } from '@/components/ui/dialog'
 
 export default function ServerDetailPage({ params }) {
-  const [serverId, setServerId] = useState(null)
+  const resolvedParams = use(params)
+  const serverId = resolvedParams.id
   const [server, setServer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -27,14 +28,6 @@ export default function ServerDetailPage({ params }) {
   const [canVote, setCanVote] = useState(true)
   const [voteTimeLeft, setVoteTimeLeft] = useState(0)
   const [voteDialogOpen, setVoteDialogOpen] = useState(false)
-  
-  useEffect(() => {
-    const loadParams = async () => {
-      const resolvedParams = await params
-      setServerId(resolvedParams.id)
-    }
-    loadParams()
-  }, [params])
   
   useEffect(() => {
     if (serverId) {
