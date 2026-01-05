@@ -35,7 +35,7 @@ export default function AdminDashboard() {
   const statCards = [
     { label: 'Total Servers', value: stats.servers, icon: Server, color: 'text-blue-500' },
     { label: 'Total Users', value: stats.users, icon: Users, color: 'text-green-500' },
-    { label: 'A\u00e7\u0131k Destek', value: stats.tickets, icon: Ticket, color: 'text-yellow-500' },
+    { label: 'Open Tickets', value: stats.tickets, icon: Ticket, color: 'text-yellow-500' },
     { label: 'Blog Yaz\u0131lar\u0131', value: stats.posts, icon: FileText, color: 'text-purple-500' },
   ]
 
