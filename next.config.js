@@ -1,5 +1,6 @@
 const nextConfig = {
-  output: 'standalone',
+  // Removed 'standalone' output for Netlify compatibility
+  // Netlify uses its own Next.js runtime
   images: {
     unoptimized: true,
   },
