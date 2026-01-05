@@ -201,14 +201,14 @@ export default function SubmitServerPage() {
       if (response.ok) {
         toast.success('Server submitted successfully! 🎉')
         setTimeout(() => {
-          router.push(`/server/${data.id}`)
+          router.push('/')
         }, 1500)
       } else {
         toast.error(data.error || 'Failed to submit server')
       }
     } catch (error) {
       console.error('Submit error:', error)
-      toast.error('Failed to submit server')
+      toast.error('Failed to submit server: ' + (error.message || 'Unknown error'))
     } finally {
       setLoading(false)
     }
