@@ -67,9 +67,13 @@ export default function RegisterPage() {
           console.error('Create user error:', errorData)
         }
 
-        toast.success('Account created! Welcome!')
-        router.push('/')
-        router.refresh()
+        toast.success('Account created! Logging you in...')
+        
+        // Wait a bit for session to be established
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // Redirect and force reload
+        window.location.href = '/'
       }
     } catch (error) {
       console.error('Registration error:', error)
