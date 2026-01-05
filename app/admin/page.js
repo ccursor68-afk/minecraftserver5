@@ -36,7 +36,7 @@ export default function AdminDashboard() {
     { label: 'Total Servers', value: stats.servers, icon: Server, color: 'text-blue-500' },
     { label: 'Total Users', value: stats.users, icon: Users, color: 'text-green-500' },
     { label: 'Open Tickets', value: stats.tickets, icon: Ticket, color: 'text-yellow-500' },
-    { label: 'Blog Yaz\u0131lar\u0131', value: stats.posts, icon: FileText, color: 'text-purple-500' },
+    { label: 'Blog Posts', value: stats.posts, icon: FileText, color: 'text-purple-500' },
   ]
 
   return (
