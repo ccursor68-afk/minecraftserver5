@@ -80,6 +80,11 @@ export default function AdminUsersPage() {
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-400">ID: {user.id}</p>
+                  {user.lastSignIn && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Last login: {new Date(user.lastSignIn).toLocaleString()}
+                    </p>
+                  )}
                 </div>
                 <Select value={user.role} onValueChange={(val) => changeRole(user.id, val)}>
                   <SelectTrigger className="w-32 bg-gray-800 border-gray-700">
