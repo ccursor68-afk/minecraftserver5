@@ -191,7 +191,8 @@ export default function SubmitServerPage() {
         body: JSON.stringify({
           ...formData,
           port: parseInt(formData.port),
-          votifierPort: formData.votifierPort ? parseInt(formData.votifierPort) : null
+          votifierPort: formData.votifierPort ? parseInt(formData.votifierPort) : null,
+          ownerId: user?.id // Add user ID
         })
       })
       
