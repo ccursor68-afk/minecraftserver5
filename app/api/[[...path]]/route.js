@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase, initializeMockData } from '../../../lib/supabase.js'
+import { supabase, supabaseAdmin, initializeMockData } from '../../../lib/supabase.js'
 import { sendVotifierPacket, isVotifierConfigured } from '../../../lib/votifier.js'
 import { getServerStatus } from '../../../lib/mcstatus.js'
 
