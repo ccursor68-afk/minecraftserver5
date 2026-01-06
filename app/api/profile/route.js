@@ -69,6 +69,8 @@ export async function PATCH(request) {
     }
     
     const body = await request.json()
+    console.log('Profile update request:', { userId: user.id, body })
+    
     const updates = {}
     
     if (body.minecraftUsername !== undefined) {
@@ -85,6 +87,8 @@ export async function PATCH(request) {
       return NextResponse.json({ error: 'No updates provided' }, { status: 400 })
     }
     
+    console.log('Updating user with:', updates)
+    
     // Update user profile
     const { data, error } = await supabaseAdmin
       .from('users')
@@ -95,8 +99,10 @@ export async function PATCH(request) {
     
     if (error) {
       console.error('Error updating profile:', error)
-      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 })
+      return NextResponse.json({ error: 'Failed to update profile', details: error.message }, { status: 500 })
     }
+    
+    console.log('Profile updated successfully:', data)
     
     // Log activity
     await supabaseAdmin
@@ -111,6 +117,6 @@ export async function PATCH(request) {
     return NextResponse.json(data)
   } catch (error) {
     console.error('API Error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
   }
 }
