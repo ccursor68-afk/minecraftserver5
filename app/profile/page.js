@@ -313,6 +313,15 @@ export default function ProfilePage() {
                               <Eye className="w-4 h-4" />
                             </Button>
                           </Link>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteServer(server.id, server.name)}
+                            disabled={deleting === server.id}
+                            className="text-red-500 hover:text-red-600 hover:bg-red-950"
+                          >
+                            {deleting === server.id ? '...' : '🗑️'}
+                          </Button>
                         </div>
                       </div>
                     </div>
