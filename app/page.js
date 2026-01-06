@@ -45,7 +45,10 @@ const PLATFORMS = [
 export default function HomePage() {
   const router = useRouter()
   const [servers, setServers] = useState([])
-  const [banners, setBanners] = useState([])
+  const [topBanners, setTopBanners] = useState([])
+  const [bottomBanners, setBottomBanners] = useState([])
+  const [betweenServersBanners, setBetweenServersBanners] = useState([])
+  const [sidebarBanners, setSidebarBanners] = useState([])
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [userRole, setUserRole] = useState(null)
