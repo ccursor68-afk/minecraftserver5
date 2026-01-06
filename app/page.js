@@ -161,42 +161,7 @@ export default function HomePage() {
                 </Link>
               )}
             </nav>
-            <div className="flex items-center gap-2">
-              {user ? (
-                <>
-                  <Link href="/submit">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                      <Plus className="w-4 h-4 mr-1" />
-                      Submit Server
-                    </Button>
-                  </Link>
-                  <Button 
-                    onClick={handleSignOut}
-                    variant="outline" 
-                    size="sm" 
-                    className="border-gray-700 hover:border-red-500"
-                  >
-                    <LogOut className="w-4 h-4 mr-1" />
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/auth/login">
-                    <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
-                      <LogIn className="w-4 h-4 mr-1" />
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/auth/register">
-                    <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                      <UserPlus className="w-4 h-4 mr-1" />
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+            <UserMenu />
           </div>
         </div>
       </header>
