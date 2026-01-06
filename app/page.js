@@ -100,7 +100,10 @@ export default function HomePage() {
       const response = await fetch('/api/banners/active')
       if (response.ok) {
         const data = await response.json()
-        setBanners(data)
+        setTopBanners(data.filter(b => b.position === 'top'))
+        setBottomBanners(data.filter(b => b.position === 'bottom'))
+        setBetweenServersBanners(data.filter(b => b.position === 'between_servers'))
+        setSidebarBanners(data.filter(b => b.position === 'sidebar'))
       }
     } catch (error) {
       console.error('Error fetching banners:', error)
