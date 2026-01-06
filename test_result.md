@@ -205,6 +205,67 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+
+  - task: "POST /api/blog/categories - Create new category"
+    implemented: true
+    working: "NA"
+    file: "app/api/blog/categories/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented POST endpoint for creating blog categories. Validates required fields (name, slug), checks for duplicate slugs, and inserts into blog_categories table."
+
+  - task: "DELETE /api/blog/categories - Delete category"
+    implemented: true
+    working: "NA"
+    file: "app/api/blog/categories/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented DELETE endpoint for removing categories. Cascade deletes all posts in the category before removing the category itself."
+
+  - task: "GET /api/blog/posts - Get all posts or filter by category"
+    implemented: true
+    working: "NA"
+    file: "app/api/blog/posts/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented GET endpoint that supports categoryId and categorySlug query parameters for filtering posts by category."
+
+  - task: "POST /api/blog/posts - Create new post"
+    implemented: true
+    working: "NA"
+    file: "app/api/blog/posts/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented POST endpoint for creating blog posts. Validates required fields (title, content, categoryId, userId) and inserts into blog_posts table."
+
+  - task: "DELETE /api/blog/posts - Delete post"
+    implemented: true
+    working: "NA"
+    file: "app/api/blog/posts/route.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "Implemented DELETE endpoint for removing posts. Cascade deletes all replies to the post before removing the post itself."
+
 agent_communication:
     - agent: "testing"
       message: "Completed comprehensive testing of all admin API endpoints for Minecraft Server List application. All 7 endpoints tested successfully with 100% pass rate. The application uses Supabase backend correctly with service role authentication for admin operations. Error handling is working properly for invalid inputs. All CRUD operations for users, tickets, and servers are functioning as expected."
