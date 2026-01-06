@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import {
   Dialog,
   DialogContent,
@@ -21,6 +23,7 @@ import {
 
 export default function ServerDetailPage() {
   const params = useParams()
+  const { t } = useLanguage()
   const serverId = params?.id
   const [server, setServer] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -49,11 +52,11 @@ export default function ServerDetailPage() {
         const data = await response.json()
         setServer(data)
       } else {
-        toast.error('Server not found')
+        toast.error(t('server.serverNotFound'))
       }
     } catch (error) {
       console.error('Error fetching server:', error)
-      toast.error('Failed to load server')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setLoading(false)
     }
@@ -90,7 +93,7 @@ export default function ServerDetailPage() {
       const ipAddress = server.port === 25565 ? server.ip : `${server.ip}:${server.port}`
       navigator.clipboard.writeText(ipAddress)
       setCopied(true)
-      toast.success('IP copied to clipboard!')
+      toast.success(t('server.copied'))
       setTimeout(() => setCopied(false), 2000)
     }
   }
@@ -109,11 +112,11 @@ export default function ServerDetailPage() {
           onlinePlayers: status.players?.online || 0,
           maxPlayers: status.players?.max || 0
         }))
-        toast.success('Server status updated!')
+        toast.success(t('server.statusUpdated'))
       }
     } catch (error) {
       console.error('Error refreshing status:', error)
-      toast.error('Failed to refresh status')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setRefreshing(false)
     }
@@ -121,12 +124,12 @@ export default function ServerDetailPage() {
   
   const handleVote = async () => {
     if (!minecraftUsername.trim()) {
-      toast.error('Please enter your Minecraft username')
+      toast.error(t('vote.enterUsernameError'))
       return
     }
     
     if (!agreePrivacy) {
-      toast.error('Please agree to the privacy policy')
+      toast.error(t('vote.agreePrivacyError'))
       return
     }
     
@@ -143,24 +146,23 @@ export default function ServerDetailPage() {
       const data = await response.json()
       
       if (response.ok) {
-        toast.success('Vote recorded! Thank you for voting! 🎉')
+        toast.success(t('vote.voteSuccess'))
         setCanVote(false)
         setVoteTimeLeft(24 * 60 * 60 * 1000)
         setVoteDialogOpen(false)
         setMinecraftUsername('')
         setAgreePrivacy(false)
-        // Refresh server data and top voters
         fetchServer()
         fetchTopVoters()
       } else if (response.status === 429) {
         toast.error(data.error)
         setCanVote(false)
       } else {
-        toast.error(data.error || 'Failed to vote')
+        toast.error(data.error || t('common.errorOccurred'))
       }
     } catch (error) {
       console.error('Vote error:', error)
-      toast.error('Failed to vote. Please try again.')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setVoting(false)
     }
@@ -171,7 +173,7 @@ export default function ServerDetailPage() {
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
-          <p className="mt-4 text-gray-400">Loading server...</p>
+          <p className="mt-4 text-gray-400">{t('server.loadingServer')}</p>
         </div>
       </div>
     )
@@ -181,10 +183,10 @@ export default function ServerDetailPage() {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-gray-400">Server not found</p>
+          <p className="text-xl text-gray-400">{t('server.serverNotFound')}</p>
           <Link href="/">
             <Button className="mt-4 bg-green-600 hover:bg-green-700">
-              Back to Home
+              {t('server.backToHome')}
             </Button>
           </Link>
         </div>
@@ -208,6 +210,7 @@ export default function ServerDetailPage() {
                 <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
               </div>
             </Link>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
@@ -231,7 +234,7 @@ export default function ServerDetailPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full ${server.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className="text-sm font-medium">{server.status}</span>
+                    <span className="text-sm font-medium">{server.status === 'online' ? t('server.online') : t('server.offline')}</span>
                   </div>
                 </div>
                 
@@ -260,7 +263,7 @@ export default function ServerDetailPage() {
                       {copied ? (
                         <>
                           <Check className="w-5 h-5 mr-2" />
-                          Copied!
+                          {t('server.copied')}
                         </>
                       ) : (
                         <>
@@ -269,7 +272,7 @@ export default function ServerDetailPage() {
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-center text-gray-500 mt-2">Click to copy server IP</p>
+                    <p className="text-xs text-center text-gray-500 mt-2">{t('server.clickToCopy')}</p>
                   </div>
                   
                   {/* Vote Button */}
@@ -280,40 +283,40 @@ export default function ServerDetailPage() {
                           disabled={!canVote}
                           className="bg-green-600 hover:bg-green-700 text-white font-bold h-14 px-8"
                         >
-                          {canVote ? '🗳️ Vote Now!' : `⏰ ${hoursUntilVote}h left`}
+                          {canVote ? t('server.voteNow') : `⏰ ${hoursUntilVote}${t('server.hoursLeft')}`}
                         </Button>
                         <p className="text-xs text-center text-gray-500 mt-2">
-                          {server.voteCount.toLocaleString()} votes
+                          {server.voteCount.toLocaleString()} {t('server.votes')}
                         </p>
                       </div>
                     </DialogTrigger>
                     <DialogContent className="bg-[#0f0f0f] border-gray-800 max-w-md">
                       <DialogHeader>
-                        <DialogTitle className="text-2xl">Vote for {server.name}</DialogTitle>
+                        <DialogTitle className="text-2xl">{t('vote.title')} {server.name}</DialogTitle>
                         <DialogDescription>
-                          Support this server by voting! You can vote once every 24 hours.
+                          {t('vote.description')}
                         </DialogDescription>
                       </DialogHeader>
                       
                       <div className="space-y-4 py-4">
                         {/* Minecraft Username Input */}
                         <div className="space-y-2">
-                          <label className="text-sm font-medium">Minecraft Username *</label>
+                          <label className="text-sm font-medium">{t('vote.minecraftUsername')}</label>
                           <Input
                             type="text"
-                            placeholder="Enter your Minecraft username"
+                            placeholder={t('vote.enterUsername')}
                             value={minecraftUsername}
                             onChange={(e) => setMinecraftUsername(e.target.value)}
                             className="bg-gray-800 border-gray-700"
                             disabled={voting}
                           />
-                          <p className="text-xs text-gray-400">This username will be sent to the server for rewards</p>
+                          <p className="text-xs text-gray-400">{t('vote.usernameHelp')}</p>
                         </div>
                         
                         {/* Cloudflare Turnstile Placeholder */}
                         <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
                           <div className="flex items-center justify-center h-16 bg-gray-900 rounded">
-                            <p className="text-gray-500 text-sm">🔒 Cloudflare Turnstile Verification</p>
+                            <p className="text-gray-500 text-sm">{t('vote.captcha')}</p>
                           </div>
                         </div>
                         
@@ -328,11 +331,7 @@ export default function ServerDetailPage() {
                             disabled={voting}
                           />
                           <label htmlFor="privacy" className="text-sm text-gray-300 cursor-pointer">
-                            I agree to the{' '}
-                            <Link href="/privacy" target="_blank" className="text-green-500 hover:underline">
-                              Privacy Policy
-                            </Link>
-                            {' '}and understand my username will be sent to the server
+                            {t('vote.agreePrivacy')}
                           </label>
                         </div>
                         
@@ -343,7 +342,7 @@ export default function ServerDetailPage() {
                             disabled={voting || !canVote || !minecraftUsername.trim() || !agreePrivacy}
                             className="flex-1 bg-green-600 hover:bg-green-700 h-11 text-base font-semibold"
                           >
-                            {voting ? 'Voting...' : '✔ Vote'}
+                            {voting ? t('vote.voting') : t('vote.voteButton')}
                           </Button>
                           <Button
                             onClick={() => setVoteDialogOpen(false)}
@@ -351,13 +350,13 @@ export default function ServerDetailPage() {
                             disabled={voting}
                             className="flex-1 border-gray-700 hover:bg-gray-800 h-11"
                           >
-                            Back to server page
+                            {t('vote.backButton')}
                           </Button>
                         </div>
                         
                         {!canVote && voteTimeLeft > 0 && (
                           <p className="text-center text-sm text-yellow-500">
-                            ⏱️ You can vote again in {Math.ceil(voteTimeLeft / (1000 * 60 * 60))} hours
+                            {t('vote.canVoteIn')} {Math.ceil(voteTimeLeft / (1000 * 60 * 60))} {t('vote.hours')}
                           </p>
                         )}
                       </div>
@@ -369,7 +368,7 @@ export default function ServerDetailPage() {
             
             {/* Server Description */}
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
-              <h2 className="text-2xl font-bold mb-4">About This Server</h2>
+              <h2 className="text-2xl font-bold mb-4">{t('server.aboutServer')}</h2>
               <div className="prose prose-invert prose-green max-w-none">
                 <ReactMarkdown>{server.longDescription}</ReactMarkdown>
               </div>
@@ -381,13 +380,14 @@ export default function ServerDetailPage() {
             {/* Server Stats */}
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold">Server Stats</h3>
+                <h3 className="text-xl font-bold">{t('server.serverStats')}</h3>
                 <Button
                   onClick={refreshServerStatus}
                   disabled={refreshing}
                   size="sm"
                   variant="ghost"
                   className="hover:bg-gray-800"
+                  title={t('server.refreshStatus')}
                 >
                   <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
                 </Button>
@@ -396,7 +396,7 @@ export default function ServerDetailPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Users className="w-5 h-5" />
-                    <span>Players Online</span>
+                    <span>{t('server.playersOnline')}</span>
                   </div>
                   <span className="font-bold text-green-500">
                     {server.onlinePlayers.toLocaleString()} / {server.maxPlayers.toLocaleString()}
@@ -406,17 +406,17 @@ export default function ServerDetailPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-gray-400">
                     <Wifi className="w-5 h-5" />
-                    <span>Status</span>
+                    <span>{t('server.status')}</span>
                   </div>
                   <Badge className={server.status === 'online' ? 'bg-green-600' : 'bg-red-600'}>
-                    {server.status}
+                    {server.status === 'online' ? t('server.online') : t('server.offline')}
                   </Badge>
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span>🗳️</span>
-                    <span>Total Votes</span>
+                    <span>{t('server.totalVotes')}</span>
                   </div>
                   <span className="font-bold text-white">{server.voteCount.toLocaleString()}</span>
                 </div>
@@ -424,7 +424,7 @@ export default function ServerDetailPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-gray-400">
                     <span>📦</span>
-                    <span>Version</span>
+                    <span>{t('server.version')}</span>
                   </div>
                   <span className="font-medium text-white">{server.version}</span>
                 </div>
@@ -433,13 +433,13 @@ export default function ServerDetailPage() {
             
             {/* Social Links */}
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
-              <h3 className="text-xl font-bold mb-4">Connect</h3>
+              <h3 className="text-xl font-bold mb-4">{t('server.connect')}</h3>
               <div className="space-y-3">
                 {server.website && (
                   <a href={server.website} target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="w-full justify-start border-gray-700 hover:border-green-500">
                       <Globe className="w-5 h-5 mr-2" />
-                      Website
+                      {t('server.website')}
                       <ExternalLink className="w-4 h-4 ml-auto" />
                     </Button>
                   </a>
@@ -448,7 +448,7 @@ export default function ServerDetailPage() {
                   <a href={server.discord} target="_blank" rel="noopener noreferrer">
                     <Button variant="outline" className="w-full justify-start border-gray-700 hover:border-green-500">
                       <MessageCircle className="w-5 h-5 mr-2" />
-                      Discord
+                      {t('server.discord')}
                       <ExternalLink className="w-4 h-4 ml-auto" />
                     </Button>
                   </a>
@@ -458,25 +458,25 @@ export default function ServerDetailPage() {
             
             {/* Vote Reward Info */}
             <Card className="bg-gradient-to-br from-green-950/30 to-green-900/10 border-green-800 p-6">
-              <h3 className="text-xl font-bold mb-2 text-green-400">🎁 Vote Rewards</h3>
+              <h3 className="text-xl font-bold mb-2 text-green-400">{t('server.voteRewards')}</h3>
               <p className="text-sm text-gray-300">
-                Vote for this server to receive in-game rewards! Rewards are delivered automatically via Votifier.
+                {t('server.voteRewardsDesc')}
               </p>
             </Card>
             
             {/* Top Voters */}
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
-              <h3 className="text-xl font-bold mb-4">🏆 Top Voters This Month</h3>
+              <h3 className="text-xl font-bold mb-4">{t('server.topVoters')}</h3>
               {topVoters.length === 0 ? (
                 <div className="text-center py-8 text-gray-400">
-                  <p className="text-sm">No votes yet this month</p>
-                  <p className="text-xs mt-1">Be the first to vote!</p>
+                  <p className="text-sm">{t('server.noVotes')}</p>
+                  <p className="text-xs mt-1">{t('server.beFirst')}</p>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2 pb-2 border-b border-gray-800 text-sm font-semibold text-gray-400">
-                    <span>Nickname</span>
-                    <span className="text-right">Vote(s)</span>
+                    <span>{t('server.nickname')}</span>
+                    <span className="text-right">{t('server.voteCount')}</span>
                   </div>
                   {topVoters.map((voter, index) => (
                     <div key={index} className="grid grid-cols-2 gap-2 py-2 border-b border-gray-900/50 hover:bg-gray-900/30">
