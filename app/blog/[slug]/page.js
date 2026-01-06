@@ -15,21 +15,39 @@ export default function CategoryDetailPage({ params }) {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [categorySlug, setCategorySlug] = useState(null)
+  const [initialized, setInitialized] = useState(false)
 
-  // Resolve params safely
+  // Resolve params safely - handle both sync and async params
   useEffect(() => {
-    if (params && params.slug) {
-      const slug = typeof params.slug === 'string' ? params.slug : params.slug[0]
-      setCategorySlug(slug)
+    const resolveParams = async () => {
+      try {
+        // Handle async params in Next.js 14+
+        const resolvedParams = await Promise.resolve(params)
+        const slug = resolvedParams?.slug
+        
+        if (slug) {
+          const finalSlug = typeof slug === 'string' ? slug : slug[0]
+          console.log('Resolved category slug:', finalSlug)
+          setCategorySlug(finalSlug)
+          setInitialized(true)
+        }
+      } catch (error) {
+        console.error('Error resolving params:', error)
+      }
     }
-  }, [params])
+    
+    if (!initialized) {
+      resolveParams()
+    }
+  }, [params, initialized])
 
   useEffect(() => {
-    if (categorySlug) {
+    if (categorySlug && initialized) {
+      console.log('Fetching data for category:', categorySlug)
       fetchCategory()
       fetchPosts()
     }
-  }, [categorySlug])
+  }, [categorySlug, initialized])
 
   const fetchCategory = async () => {
     if (!categorySlug) return
