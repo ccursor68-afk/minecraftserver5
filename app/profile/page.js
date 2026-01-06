@@ -125,7 +125,9 @@ export default function ProfilePage() {
     )
   }
   
-  const avatarUrl = profile?.avatarUrl || `https://crafatar.com/avatars/steve?size=128&overlay`
+  const avatarUrl = profile?.minecraftUsername 
+    ? `https://crafatar.com/avatars/${profile.minecraftUsername}?size=128&overlay`
+    : 'https://crafatar.com/avatars/steve?size=128&overlay'
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] py-12">
