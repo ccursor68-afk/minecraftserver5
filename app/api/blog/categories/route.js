@@ -95,3 +95,50 @@ export async function POST(request) {
     }, { status: 500 })
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const categoryId = searchParams.get('id')
+    
+    if (!categoryId) {
+      return NextResponse.json({ error: 'Category ID is required' }, { status: 400 })
+    }
+    
+    // First, delete all posts in this category (cascade delete)
+    const { error: postsError } = await supabaseAdmin
+      .from('blog_posts')
+      .delete()
+      .eq('categoryId', categoryId)
+    
+    if (postsError) {
+      console.error('Error deleting category posts:', postsError)
+      return NextResponse.json({ 
+        error: 'Failed to delete category posts',
+        details: postsError.message 
+      }, { status: 500 })
+    }
+    
+    // Then delete the category
+    const { error: categoryError } = await supabaseAdmin
+      .from('blog_categories')
+      .delete()
+      .eq('id', categoryId)
+    
+    if (categoryError) {
+      console.error('Error deleting category:', categoryError)
+      return NextResponse.json({ 
+        error: 'Failed to delete category',
+        details: categoryError.message 
+      }, { status: 500 })
+    }
+    
+    return NextResponse.json({ success: true, message: 'Category deleted successfully' })
+  } catch (error) {
+    console.error('API Error:', error)
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error.message 
+    }, { status: 500 })
+  }
+}
