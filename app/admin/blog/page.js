@@ -2,14 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { toast } from 'sonner'
 
 export default function AdminBlogPage() {
   const [categories, setCategories] = useState([])
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [deleting, setDeleting] = useState(null)
 
   useEffect(() => {
     fetchData()
@@ -35,6 +37,58 @@ export default function AdminBlogPage() {
       console.error('Error:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const deleteCategory = async (categoryId, categoryName) => {
+    if (!confirm(`"${categoryName}" kategorisini silmek istediğinizden emin misiniz? Bu kategorideki tüm postlar da silinecek!`)) {
+      return
+    }
+
+    setDeleting(`cat-${categoryId}`)
+    try {
+      const response = await fetch(`/api/blog/categories?id=${categoryId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        toast.success('Kategori başarıyla silindi')
+        fetchData()
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Kategori silinirken hata oluştu')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Kategori silinirken hata oluştu')
+    } finally {
+      setDeleting(null)
+    }
+  }
+
+  const deletePost = async (postId, postTitle) => {
+    if (!confirm(`"${postTitle}" postunu silmek istediğinizden emin misiniz?`)) {
+      return
+    }
+
+    setDeleting(`post-${postId}`)
+    try {
+      const response = await fetch(`/api/blog/posts?id=${postId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        toast.success('Post başarıyla silindi')
+        fetchData()
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Post silinirken hata oluştu')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Post silinirken hata oluştu')
+    } finally {
+      setDeleting(null)
     }
   }
 
