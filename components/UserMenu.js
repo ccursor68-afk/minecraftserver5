@@ -107,7 +107,7 @@ export default function UserMenu() {
           alt="Avatar"
           className="w-8 h-8 rounded border-2 border-green-500 hover:shadow-lg hover:shadow-green-500/50 transition-shadow"
           onError={(e) => {
-            e.target.src = 'https://crafatar.com/avatars/steve?size=32&overlay'
+            e.target.src = 'https://mc-heads.net/avatar/MHF_Steve/32'
           }}
         />
         <span className="text-sm font-medium hidden md:block">{profile?.username}</span>
