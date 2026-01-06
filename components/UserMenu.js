@@ -131,7 +131,7 @@ export default function UserMenu() {
               </button>
             </Link>
             
-            <Link href="/admin/tickets" onClick={() => setIsOpen(false)}>
+            <Link href="/tickets" onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2">
                 <Ticket className="w-4 h-4 text-purple-500" />
                 <span>Destek Taleplerim</span>
