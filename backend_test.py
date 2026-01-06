@@ -277,6 +277,238 @@ class MinecraftServerListTester:
         
         return False
     
+    # Blog API Tests
+    def test_post_blog_category(self):
+        """Test POST /api/blog/categories - Create new category"""
+        print("\n🔍 Testing POST /api/blog/categories")
+        
+        # Test creating a valid category
+        category_data = {
+            "name": "Gaming Guides",
+            "slug": "gaming-guides",
+            "description": "Comprehensive guides for Minecraft gameplay",
+            "icon": "🎮",
+            "color": "#22c55e"
+        }
+        
+        response = self.make_request('POST', '/blog/categories', category_data, 201)
+        
+        if response and 'error' not in response:
+            if response.get('id') and response.get('name') == category_data['name']:
+                self.test_data['category_id'] = response.get('id')
+                self.log_test(
+                    "POST /api/blog/categories",
+                    True,
+                    f"Successfully created category '{category_data['name']}'",
+                    {"category_id": response.get('id'), "slug": response.get('slug')}
+                )
+                
+                # Test duplicate slug validation
+                duplicate_response = self.make_request('POST', '/blog/categories', category_data, 409)
+                if duplicate_response and duplicate_response.get('status_code') == 409:
+                    self.log_test(
+                        "POST /api/blog/categories (duplicate slug)",
+                        True,
+                        "Correctly rejected duplicate slug",
+                        {"expected_status": 409}
+                    )
+                
+                # Test missing required fields
+                invalid_data = {"name": "Test Category"}  # Missing slug
+                invalid_response = self.make_request('POST', '/blog/categories', invalid_data, 400)
+                if invalid_response and invalid_response.get('status_code') == 400:
+                    self.log_test(
+                        "POST /api/blog/categories (missing fields)",
+                        True,
+                        "Correctly rejected missing required fields",
+                        {"expected_status": 400}
+                    )
+                
+                return True
+            else:
+                self.log_test("POST /api/blog/categories", False, "Invalid response format", {"response": response})
+        else:
+            self.log_test("POST /api/blog/categories", False, "Failed to create category", {"error": response})
+        
+        return False
+    
+    def test_get_blog_posts(self):
+        """Test GET /api/blog/posts - Get posts with filtering"""
+        print("\n🔍 Testing GET /api/blog/posts")
+        
+        # Test getting all posts
+        response = self.make_request('GET', '/blog/posts')
+        
+        if response and 'error' not in response:
+            posts = response
+            if isinstance(posts, list):
+                self.log_test(
+                    "GET /api/blog/posts (all posts)",
+                    True,
+                    f"Successfully retrieved {len(posts)} posts",
+                    {"post_count": len(posts)}
+                )
+                
+                # Test filtering by categoryId if we have one
+                if self.test_data['category_id']:
+                    category_response = self.make_request('GET', f'/blog/posts?categoryId={self.test_data["category_id"]}')
+                    if category_response and 'error' not in category_response:
+                        self.log_test(
+                            "GET /api/blog/posts (filter by categoryId)",
+                            True,
+                            f"Successfully filtered posts by categoryId",
+                            {"filtered_count": len(category_response)}
+                        )
+                    
+                    # Test filtering by categorySlug
+                    slug_response = self.make_request('GET', '/blog/posts?categorySlug=gaming-guides')
+                    if slug_response and 'error' not in slug_response:
+                        self.log_test(
+                            "GET /api/blog/posts (filter by categorySlug)",
+                            True,
+                            f"Successfully filtered posts by categorySlug",
+                            {"filtered_count": len(slug_response)}
+                        )
+                
+                return True
+            else:
+                self.log_test("GET /api/blog/posts", False, "Response is not a list", {"response": response})
+        else:
+            self.log_test("GET /api/blog/posts", False, "Failed to get posts", {"error": response})
+        
+        return False
+    
+    def test_post_blog_post(self):
+        """Test POST /api/blog/posts - Create new post"""
+        print("\n🔍 Testing POST /api/blog/posts")
+        
+        if not self.test_data['category_id']:
+            self.log_test("POST /api/blog/posts", False, "No category ID available for testing", {})
+            return False
+        
+        if not self.test_data['user_id']:
+            self.log_test("POST /api/blog/posts", False, "No user ID available for testing", {})
+            return False
+        
+        # Test creating a valid post
+        post_data = {
+            "title": "Ultimate Minecraft Survival Guide",
+            "content": "This comprehensive guide covers everything you need to know about surviving your first night in Minecraft. From gathering resources to building your first shelter, we'll walk you through each step.",
+            "excerpt": "Learn the basics of Minecraft survival in this beginner-friendly guide.",
+            "categoryId": self.test_data['category_id'],
+            "userId": self.test_data['user_id'],
+            "tags": ["minecraft", "survival", "guide", "beginner"]
+        }
+        
+        response = self.make_request('POST', '/blog/posts', post_data, 201)
+        
+        if response and 'error' not in response:
+            if response.get('id') and response.get('title') == post_data['title']:
+                self.test_data['post_id'] = response.get('id')
+                self.log_test(
+                    "POST /api/blog/posts",
+                    True,
+                    f"Successfully created post '{post_data['title']}'",
+                    {"post_id": response.get('id'), "slug": response.get('slug')}
+                )
+                
+                # Test missing required fields
+                invalid_data = {"title": "Test Post"}  # Missing content, categoryId, userId
+                invalid_response = self.make_request('POST', '/blog/posts', invalid_data, 400)
+                if invalid_response and invalid_response.get('status_code') == 400:
+                    self.log_test(
+                        "POST /api/blog/posts (missing fields)",
+                        True,
+                        "Correctly rejected missing required fields",
+                        {"expected_status": 400}
+                    )
+                
+                return True
+            else:
+                self.log_test("POST /api/blog/posts", False, "Invalid response format", {"response": response})
+        else:
+            self.log_test("POST /api/blog/posts", False, "Failed to create post", {"error": response})
+        
+        return False
+    
+    def test_delete_blog_post(self):
+        """Test DELETE /api/blog/posts - Delete post"""
+        print("\n🔍 Testing DELETE /api/blog/posts")
+        
+        if not self.test_data['post_id']:
+            self.log_test("DELETE /api/blog/posts", False, "No post ID available for testing", {})
+            return False
+        
+        post_id = self.test_data['post_id']
+        
+        response = self.make_request('DELETE', f'/blog/posts?id={post_id}')
+        
+        if response and 'error' not in response:
+            if response.get('success') or response.get('message'):
+                self.log_test(
+                    "DELETE /api/blog/posts",
+                    True,
+                    f"Successfully deleted post {post_id}",
+                    {"post_id": post_id}
+                )
+                
+                # Test with non-existent post ID
+                invalid_response = self.make_request('DELETE', '/blog/posts?id=invalid_post_id', {}, 500)
+                if invalid_response and invalid_response.get('status_code') in [404, 500]:
+                    self.log_test(
+                        "DELETE /api/blog/posts (non-existent ID)",
+                        True,
+                        "Correctly handled non-existent post ID",
+                        {"status_code": invalid_response.get('status_code')}
+                    )
+                
+                return True
+            else:
+                self.log_test("DELETE /api/blog/posts", False, "Unexpected response format", {"response": response})
+        else:
+            self.log_test("DELETE /api/blog/posts", False, "Failed to delete post", {"error": response})
+        
+        return False
+    
+    def test_delete_blog_category(self):
+        """Test DELETE /api/blog/categories - Delete category"""
+        print("\n🔍 Testing DELETE /api/blog/categories")
+        
+        if not self.test_data['category_id']:
+            self.log_test("DELETE /api/blog/categories", False, "No category ID available for testing", {})
+            return False
+        
+        category_id = self.test_data['category_id']
+        
+        response = self.make_request('DELETE', f'/blog/categories?id={category_id}')
+        
+        if response and 'error' not in response:
+            if response.get('success') or response.get('message'):
+                self.log_test(
+                    "DELETE /api/blog/categories",
+                    True,
+                    f"Successfully deleted category {category_id}",
+                    {"category_id": category_id}
+                )
+                
+                # Test with non-existent category ID
+                invalid_response = self.make_request('DELETE', '/blog/categories?id=invalid_category_id', {}, 500)
+                if invalid_response and invalid_response.get('status_code') in [404, 500]:
+                    self.log_test(
+                        "DELETE /api/blog/categories (non-existent ID)",
+                        True,
+                        "Correctly handled non-existent category ID",
+                        {"status_code": invalid_response.get('status_code')}
+                    )
+                
+                return True
+            else:
+                self.log_test("DELETE /api/blog/categories", False, "Unexpected response format", {"response": response})
+        else:
+            self.log_test("DELETE /api/blog/categories", False, "Failed to delete category", {"error": response})
+        
+        return False
+    
     def test_error_handling(self):
         """Test error handling for invalid endpoints"""
         print("\n🔍 Testing Error Handling")
