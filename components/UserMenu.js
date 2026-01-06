@@ -35,6 +35,7 @@ export default function UserMenu() {
   }
   
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     checkUser()
     
     // Close dropdown when clicking outside
