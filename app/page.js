@@ -111,15 +111,6 @@ export default function HomePage() {
     }
   }
   
-  const handleSignOut = async () => {
-    const supabase = createBrowserSupabaseClient()
-    await supabase.auth.signOut()
-    setUser(null)
-    setUserRole(null)
-    toast.success('Logged out successfully')
-    router.refresh()
-  }
-  
   const filteredServers = servers.filter(server => {
     const matchesSearch = server.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          server.shortDescription?.toLowerCase().includes(searchTerm.toLowerCase())
