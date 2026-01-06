@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import AnalyticsWrapper from '@/components/AnalyticsWrapper'
 
 const inter = Inter({ subsets: ['latin'] })
 
