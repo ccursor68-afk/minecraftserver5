@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 import UserMenu from '@/components/UserMenu'
+import Footer from '@/components/Footer'
 
 // Game mode categories
 const GAME_MODES = [
