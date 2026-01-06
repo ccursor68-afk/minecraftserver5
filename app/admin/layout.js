@@ -75,6 +75,8 @@ export default function AdminLayout({ children }) {
     { href: '/admin/tickets', label: 'Support', icon: Ticket },
     { href: '/admin/blog', label: 'Blog', icon: FileText },
     { href: '/admin/banners', label: 'Banners', icon: Image },
+    { href: '/admin/pages', label: 'Pages', icon: FileCode },
+    { href: '/admin/theme', label: 'Theme', icon: Palette },
     { href: '/admin/settings', label: 'Settings', icon: Settings },
   ]
 
