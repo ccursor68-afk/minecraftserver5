@@ -454,13 +454,7 @@ export default function HomePage() {
         </div>
       </section>
       
-      {/* Footer */}
-      <footer className="border-t border-gray-800 py-8 mt-12">
-        <div className="container mx-auto px-4 text-center text-gray-400 text-sm">
-          <p>© 2025 Minecraft Server List. All rights reserved.</p>
-          <p className="mt-2">Not affiliated with Mojang or Microsoft.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }
