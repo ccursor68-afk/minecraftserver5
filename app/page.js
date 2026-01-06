@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Gamepad2, Search, Filter, Trophy, Users, Plus, LogIn, UserPlus, LogOut, Shield, ExternalLink } from 'lucide-react'
+import { Gamepad2, Search, Filter, Trophy, Users, Shield, ExternalLink } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
