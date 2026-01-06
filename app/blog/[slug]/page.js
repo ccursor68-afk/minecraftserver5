@@ -2,52 +2,29 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { Gamepad2, ArrowLeft, BookOpen, MessageSquare, Clock, User, Eye, Pin } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 
-export default function CategoryDetailPage({ params }) {
+export default function CategoryDetailPage() {
   const router = useRouter()
+  const params = useParams()
   const [category, setCategory] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [categorySlug, setCategorySlug] = useState(null)
-  const [initialized, setInitialized] = useState(false)
 
-  // Resolve params safely - handle both sync and async params
-  useEffect(() => {
-    const resolveParams = async () => {
-      try {
-        // Handle async params in Next.js 14+
-        const resolvedParams = await Promise.resolve(params)
-        const slug = resolvedParams?.slug
-        
-        if (slug) {
-          const finalSlug = typeof slug === 'string' ? slug : slug[0]
-          console.log('Resolved category slug:', finalSlug)
-          setCategorySlug(finalSlug)
-          setInitialized(true)
-        }
-      } catch (error) {
-        console.error('Error resolving params:', error)
-      }
-    }
-    
-    if (!initialized) {
-      resolveParams()
-    }
-  }, [params, initialized])
+  const categorySlug = params?.slug
 
   useEffect(() => {
-    if (categorySlug && initialized) {
-      console.log('Fetching data for category:', categorySlug)
+    if (categorySlug) {
+      console.log('Loading category:', categorySlug)
       fetchCategory()
       fetchPosts()
     }
-  }, [categorySlug, initialized])
+  }, [categorySlug])
 
   const fetchCategory = async () => {
     if (!categorySlug) return
