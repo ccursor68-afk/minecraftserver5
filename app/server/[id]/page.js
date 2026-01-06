@@ -37,6 +37,7 @@ export default function ServerDetailPage() {
     if (serverId) {
       fetchServer()
       checkVoteStatus()
+      fetchTopVoters()
     }
   }, [serverId])
   
