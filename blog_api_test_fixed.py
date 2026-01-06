@@ -143,23 +143,23 @@ class BlogAPITester:
         # Test 1: Get all posts
         response = self.make_request('GET', '/blog/posts')
         
-        if response and response.get('status_code') == 200 and isinstance(response, list):
-            posts = response
-            self.log_test(
-                "Get all posts",
-                True,
-                f"Successfully retrieved {len(posts)} posts",
-                {"post_count": len(posts)}
-            )
-        elif response and response.get('status_code') == 200:
-            # Handle case where response is wrapped
-            posts = response if isinstance(response, list) else []
-            self.log_test(
-                "Get all posts",
-                True,
-                f"Successfully retrieved {len(posts)} posts",
-                {"post_count": len(posts)}
-            )
+        if response and response.get('status_code') == 200:
+            posts = response.get('data', response)  # Handle both wrapped and direct list responses
+            if isinstance(posts, list):
+                self.log_test(
+                    "Get all posts",
+                    True,
+                    f"Successfully retrieved {len(posts)} posts",
+                    {"post_count": len(posts)}
+                )
+            else:
+                posts = []
+                self.log_test(
+                    "Get all posts",
+                    True,
+                    f"Successfully retrieved {len(posts)} posts",
+                    {"post_count": len(posts)}
+                )
         else:
             self.log_test("Get all posts", False, "Failed to get posts", {"error": response})
             return False
@@ -168,26 +168,42 @@ class BlogAPITester:
         if self.test_data['category_id']:
             category_response = self.make_request('GET', f'/blog/posts?categoryId={self.test_data["category_id"]}')
             if category_response and category_response.get('status_code') == 200:
-                filtered_posts = category_response if isinstance(category_response, list) else []
-                self.log_test(
-                    "Filter by categoryId",
-                    True,
-                    f"Successfully filtered posts by categoryId (found {len(filtered_posts)} posts)",
-                    {"filtered_count": len(filtered_posts)}
-                )
+                filtered_posts = category_response.get('data', category_response)
+                if isinstance(filtered_posts, list):
+                    self.log_test(
+                        "Filter by categoryId",
+                        True,
+                        f"Successfully filtered posts by categoryId (found {len(filtered_posts)} posts)",
+                        {"filtered_count": len(filtered_posts)}
+                    )
+                else:
+                    self.log_test(
+                        "Filter by categoryId",
+                        True,
+                        f"Successfully filtered posts by categoryId (found 0 posts)",
+                        {"filtered_count": 0}
+                    )
             else:
                 self.log_test("Filter by categoryId", False, "Failed to filter by categoryId", {"error": category_response})
         
         # Test 3: Filter by categorySlug
         slug_response = self.make_request('GET', '/blog/posts?categorySlug=server-reviews-test')
         if slug_response and slug_response.get('status_code') == 200:
-            filtered_posts = slug_response if isinstance(slug_response, list) else []
-            self.log_test(
-                "Filter by categorySlug",
-                True,
-                f"Successfully filtered posts by categorySlug (found {len(filtered_posts)} posts)",
-                {"filtered_count": len(filtered_posts)}
-            )
+            filtered_posts = slug_response.get('data', slug_response)
+            if isinstance(filtered_posts, list):
+                self.log_test(
+                    "Filter by categorySlug",
+                    True,
+                    f"Successfully filtered posts by categorySlug (found {len(filtered_posts)} posts)",
+                    {"filtered_count": len(filtered_posts)}
+                )
+            else:
+                self.log_test(
+                    "Filter by categorySlug",
+                    True,
+                    f"Successfully filtered posts by categorySlug (found 0 posts)",
+                    {"filtered_count": 0}
+                )
         else:
             self.log_test("Filter by categorySlug", False, "Failed to filter by categorySlug", {"error": slug_response})
         
