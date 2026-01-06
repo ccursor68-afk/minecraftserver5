@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '../../../../../lib/supabase.js'
+import { supabaseAdmin } from '../../../../../lib/supabase.js'
 
 export async function GET(request, { params }) {
   // Handle async params in Next.js 14
@@ -10,8 +10,10 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Slug is required' }, { status: 400 })
   }
   
+  console.log('Looking up category by slug:', slug)
+  
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('blog_categories')
       .select('id, name, slug, description, icon, color')
       .eq('slug', slug)
@@ -22,6 +24,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: 'Category not found', details: error?.message }, { status: 404 })
     }
     
+    console.log('Category found:', data)
     return NextResponse.json(data)
   } catch (error) {
     console.error('API Error:', error)
