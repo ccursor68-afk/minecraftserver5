@@ -3,8 +3,8 @@ import { supabaseAdmin } from '../../../../lib/supabase.js'
 
 export async function GET() {
   try {
-    // Only select columns that exist in your table
-    const { data, error } = await supabaseAdmin
+    // Get all categories
+    const { data: categories, error } = await supabaseAdmin
       .from('blog_categories')
       .select('id, name, slug, description, icon, color')
       .order('name', { ascending: true })
@@ -14,7 +14,40 @@ export async function GET() {
       return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 })
     }
     
-    return NextResponse.json(data || [])
+    // For each category, count posts and replies
+    const categoriesWithCounts = await Promise.all(
+      (categories || []).map(async (category) => {
+        // Count posts in this category
+        const { count: postCount } = await supabaseAdmin
+          .from('blog_posts')
+          .select('id', { count: 'exact', head: true })
+          .eq('categoryId', category.id)
+        
+        // Count total replies for all posts in this category
+        const { data: posts } = await supabaseAdmin
+          .from('blog_posts')
+          .select('id')
+          .eq('categoryId', category.id)
+        
+        let replyCount = 0
+        if (posts && posts.length > 0) {
+          const postIds = posts.map(p => p.id)
+          const { count } = await supabaseAdmin
+            .from('blog_replies')
+            .select('id', { count: 'exact', head: true })
+            .in('postId', postIds)
+          replyCount = count || 0
+        }
+        
+        return {
+          ...category,
+          topicCount: postCount || 0,
+          postCount: replyCount || 0
+        }
+      })
+    )
+    
+    return NextResponse.json(categoriesWithCounts)
   } catch (error) {
     console.error('API Error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
