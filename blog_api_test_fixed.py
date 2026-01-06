@@ -74,14 +74,12 @@ class BlogAPITester:
         """Get a user ID for testing posts"""
         print("\n🔧 Setting up test user")
         response = self.make_request('GET', '/admin/users')
-        if response and 'error' not in response and isinstance(response, list) and len(response) > 0:
-            self.test_data['user_id'] = response[0].get('id')
-            print(f"   Using user ID: {self.test_data['user_id']}")
-            return True
-        elif response and response.get('status_code') == 200 and isinstance(response, list):
-            self.test_data['user_id'] = response[0].get('id')
-            print(f"   Using user ID: {self.test_data['user_id']}")
-            return True
+        if response and response.get('status_code') == 200:
+            users = response.get('data', [])
+            if len(users) > 0:
+                self.test_data['user_id'] = users[0].get('id')
+                print(f"   Using user ID: {self.test_data['user_id']}")
+                return True
         return False
     
     def test_create_blog_category(self):
