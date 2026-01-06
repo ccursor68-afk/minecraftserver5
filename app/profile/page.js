@@ -163,8 +163,8 @@ export default function ProfilePage() {
   }
   
   const avatarUrl = profile?.minecraftUsername 
-    ? `https://crafatar.com/avatars/${profile.minecraftUsername}?size=128&overlay&default=MHF_Steve&t=${Date.now()}`
-    : 'https://crafatar.com/avatars/MHF_Steve?size=128'
+    ? `https://mc-heads.net/avatar/${profile.minecraftUsername}/128`
+    : 'https://mc-heads.net/avatar/MHF_Steve/128'
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] py-12">
