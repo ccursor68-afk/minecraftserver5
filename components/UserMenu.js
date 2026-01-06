@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { LogIn, UserPlus, User, Plus, Lock, Ticket, LogOut, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { createBrowserSupabaseClient } from '@/lib/supabase-client'
+import { createBrowserSupabaseClient } from '@/lib/supabase'
 
 export default function UserMenu() {
   const router = useRouter()
