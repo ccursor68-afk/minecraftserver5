@@ -75,12 +75,7 @@ export async function PATCH(request) {
     
     if (body.minecraftUsername !== undefined) {
       updates.minecraftUsername = body.minecraftUsername
-      // Update avatar URL
-      if (body.minecraftUsername) {
-        updates.avatarUrl = `https://crafatar.com/avatars/${body.minecraftUsername}?size=128&overlay`
-      } else {
-        updates.avatarUrl = null
-      }
+      // Note: We don't store avatarUrl anymore, it's generated dynamically from minecraftUsername
     }
     
     if (Object.keys(updates).length === 0) {
