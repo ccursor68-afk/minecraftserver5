@@ -44,6 +44,8 @@ export async function POST(request) {
     
     const categoryId = `cat_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     
+    // Prepare category data - only include fields that exist in the table
+    // Note: createdAt and updatedAt are handled by database defaults
     const categoryData = {
       id: categoryId,
       name: body.name,
@@ -55,20 +57,33 @@ export async function POST(request) {
       position: parseInt(body.position) || 0,
       isActive: true,
       topicCount: 0,
-      postCount: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      postCount: 0
     }
     
+    // Insert category
+    // Note: Based on your database schema, createdAt/updatedAt columns may not exist
+    // If you get a schema cache error, run supabase_blog_categories_fix.sql first
     const { data, error } = await supabaseAdmin
       .from('blog_categories')
       .insert([categoryData])
-      .select()
+      .select('id, name, slug, description, icon, color, "parentId", position, "isActive", "topicCount", "postCount"')
       .single()
     
     if (error) {
       console.error('Error creating category:', error)
       console.error('Category data:', categoryData)
+      
+      // If error is about missing column (createdAt/updatedAt), provide helpful message
+      if (error.message && (error.message.includes('column') || error.message.includes('schema cache') || error.message.includes('createdAt'))) {
+        return NextResponse.json({ 
+          error: 'Database schema issue - Missing columns',
+          details: error.message,
+          hint: 'The blog_categories table is missing createdAt/updatedAt columns. Please run supabase_blog_categories_fix.sql in your Supabase SQL Editor to add them.',
+          solution: 'Run the SQL fix file: supabase_blog_categories_fix.sql',
+          code: error.code || null
+        }, { status: 500 })
+      }
+      
       return NextResponse.json({ 
         error: 'Failed to create category',
         details: error.message,
