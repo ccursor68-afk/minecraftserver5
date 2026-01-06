@@ -212,63 +212,78 @@ test_plan:
 
   - task: "POST /api/blog/categories - Create new category"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/api/blog/categories/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST endpoint for creating blog categories. Validates required fields (name, slug), checks for duplicate slugs, and inserts into blog_categories table."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested POST /api/blog/categories endpoint. Creates categories with all required fields (name, slug, icon, color, description). Correctly validates duplicate slugs (409 status) and missing required fields (400 status). Generated category ID: cat_1767663091515_1gbfiz18j"
 
   - task: "DELETE /api/blog/categories - Delete category"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/api/blog/categories/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented DELETE endpoint for removing categories. Cascade deletes all posts in the category before removing the category itself."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested DELETE /api/blog/categories endpoint. Correctly deletes categories with cascade deletion of associated posts. Validates missing category ID parameter (400 status). Handles non-existent category IDs gracefully."
 
   - task: "GET /api/blog/posts - Get all posts or filter by category"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/api/blog/posts/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented GET endpoint that supports categoryId and categorySlug query parameters for filtering posts by category."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested GET /api/blog/posts endpoint. Returns array of posts (retrieved 3 existing posts). Supports filtering by categoryId and categorySlug parameters. Correctly handles non-existent category slugs with 404 status. All filtering functionality working as expected."
 
   - task: "POST /api/blog/posts - Create new post"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/api/blog/posts/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented POST endpoint for creating blog posts. Validates required fields (title, content, categoryId, userId) and inserts into blog_posts table."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested POST /api/blog/posts endpoint. Creates posts with all required fields (title, content, categoryId, userId) and optional fields (excerpt, tags). Correctly validates missing required fields (400 status). Auto-generates slugs and excerpts. Generated post IDs: post_1767663093424_8sl7ezeox, post_1767663093657_uysl3w3ge"
 
   - task: "DELETE /api/blog/posts - Delete post"
     implemented: true
-    working: "NA"
+    working: true
     file: "app/api/blog/posts/route.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "Implemented DELETE endpoint for removing posts. Cascade deletes all replies to the post before removing the post itself."
+        - working: true
+          agent: "testing"
+          comment: "Successfully tested DELETE /api/blog/posts endpoint. Correctly deletes posts with cascade deletion of associated replies. Validates missing post ID parameter (400 status). Handles non-existent post IDs gracefully. All delete functionality working as expected."
 
 agent_communication:
     - agent: "testing"
