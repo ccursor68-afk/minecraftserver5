@@ -208,3 +208,5 @@ test_plan:
 agent_communication:
     - agent: "testing"
       message: "Completed comprehensive testing of all admin API endpoints for Minecraft Server List application. All 7 endpoints tested successfully with 100% pass rate. The application uses Supabase backend correctly with service role authentication for admin operations. Error handling is working properly for invalid inputs. All CRUD operations for users, tickets, and servers are functioning as expected."
+    - agent: "main"
+      message: "Added blog category and post DELETE functionality. Implemented DELETE /api/blog/categories?id=X and DELETE /api/blog/posts?id=X endpoints. Added delete buttons to admin blog management page. Ready for testing."
