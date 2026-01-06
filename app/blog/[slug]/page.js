@@ -41,15 +41,23 @@ export default function CategoryDetailPage({ params }) {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`/api/blog/posts?categorySlug=${resolvedParams.slug}`)
+      const url = `/api/blog/posts?categorySlug=${encodeURIComponent(resolvedParams.slug)}`
+      console.log('Fetching posts from:', url)
+      
+      const response = await fetch(url)
+      const data = await response.json()
+      
+      console.log('Posts response:', { ok: response.ok, status: response.status, data })
+      
       if (response.ok) {
-        const data = await response.json()
-        setPosts(data || [])
+        setPosts(Array.isArray(data) ? data : [])
       } else {
-        console.error('Error fetching posts')
+        console.error('Error fetching posts:', data)
+        toast.error(data.error || 'Postlar yüklenirken hata oluştu')
       }
     } catch (error) {
       console.error('Error fetching posts:', error)
+      toast.error('Postlar yüklenirken hata oluştu: ' + error.message)
     } finally {
       setLoading(false)
     }
