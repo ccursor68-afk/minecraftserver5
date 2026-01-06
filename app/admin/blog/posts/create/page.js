@@ -89,19 +89,23 @@ export default function CreatePostPage() {
         body: JSON.stringify({
           ...form,
           userId: user.id,
-          tags: form.tags.split(',').map(t => t.trim()).filter(Boolean)
+          tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : []
         })
       })
+
+      const data = await response.json()
 
       if (response.ok) {
         toast.success('Post created successfully!')
         router.push('/admin/blog')
       } else {
-        const data = await response.json()
-        toast.error(data.error || 'Failed to create post')
+        const errorMessage = data.details || data.error || 'Failed to create post'
+        toast.error(errorMessage)
+        console.error('Post creation error:', data)
       }
     } catch (error) {
-      toast.error('Error creating post')
+      console.error('Post creation error:', error)
+      toast.error('Error creating post: ' + (error.message || 'Unknown error'))
     } finally {
       setLoading(false)
     }
