@@ -58,9 +58,13 @@ class BlogAPITester:
             except:
                 response_data = {"success": True, "status_code": response.status_code}
             
-            # Return response data with status code for analysis
-            response_data['status_code'] = response.status_code
-            return response_data
+            # Handle case where response is a list (like GET /admin/users)
+            if isinstance(response_data, list):
+                return {"data": response_data, "status_code": response.status_code}
+            else:
+                # Return response data with status code for analysis
+                response_data['status_code'] = response.status_code
+                return response_data
                     
         except requests.exceptions.RequestException as e:
             print(f"   Request failed: {str(e)}")
