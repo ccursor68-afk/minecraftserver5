@@ -118,9 +118,13 @@ export default function ServerDetailPage() {
   }
   
   const handleVote = async () => {
-    if (!canVote) {
-      const hoursLeft = Math.ceil(voteTimeLeft / (1000 * 60 * 60))
-      toast.error(`You can vote again in ${hoursLeft} hours`)
+    if (!minecraftUsername.trim()) {
+      toast.error('Please enter your Minecraft username')
+      return
+    }
+    
+    if (!agreePrivacy) {
+      toast.error('Please agree to the privacy policy')
       return
     }
     
@@ -130,8 +134,7 @@ export default function ServerDetailPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: 'Anonymous',
-          recaptchaToken: null // TODO: Add when user provides reCAPTCHA key
+          minecraftUsername: minecraftUsername.trim()
         })
       })
       
@@ -142,8 +145,11 @@ export default function ServerDetailPage() {
         setCanVote(false)
         setVoteTimeLeft(24 * 60 * 60 * 1000)
         setVoteDialogOpen(false)
-        // Refresh server data to show updated vote count
+        setMinecraftUsername('')
+        setAgreePrivacy(false)
+        // Refresh server data and top voters
         fetchServer()
+        fetchTopVoters()
       } else if (response.status === 429) {
         toast.error(data.error)
         setCanVote(false)
