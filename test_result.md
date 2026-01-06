@@ -200,7 +200,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "All admin API endpoints tested successfully"
+    - "POST /api/blog/categories - Create new category"
+    - "DELETE /api/blog/categories - Delete category"
+    - "GET /api/blog/posts - Get all posts or filter by category"
+    - "POST /api/blog/posts - Create new post"
+    - "DELETE /api/blog/posts - Delete post"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
