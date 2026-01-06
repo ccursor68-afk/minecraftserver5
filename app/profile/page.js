@@ -11,9 +11,12 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function ProfilePage() {
   const router = useRouter()
+  const { t, locale } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(null)
@@ -88,11 +91,9 @@ export default function ProfilePage() {
   
   const handleUpdateMinecraft = async () => {
     if (minecraftUsername === profile?.minecraftUsername) {
-      toast.info('Değişiklik yok')
+      toast.info(t('profile.noChange'))
       return
     }
-    
-    console.log('Updating Minecraft username:', minecraftUsername)
     
     setSaving(true)
     try {
@@ -103,28 +104,25 @@ export default function ProfilePage() {
       })
       
       const data = await response.json()
-      console.log('Update response:', data)
       
       if (response.ok) {
-        toast.success('Minecraft kullanıcı adı güncellendi!')
+        toast.success(t('profile.updated'))
         await fetchProfile()
-        // Notify other components about profile update
         window.dispatchEvent(new Event('profileUpdated'))
-        // Force refresh to update avatar
         setTimeout(() => window.location.reload(), 500)
       } else {
-        toast.error(data.error || 'Güncellenemedi')
+        toast.error(data.error || t('profile.updateFailed'))
       }
     } catch (error) {
       console.error('Error:', error)
-      toast.error('Bir hata oluştu')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setSaving(false)
     }
   }
   
   const deleteServer = async (serverId, serverName) => {
-    if (!confirm(`"${serverName}" sunucusunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!`)) {
+    if (!confirm(`"${serverName}" ${t('profile.deleteConfirm')}`)) {
       return
     }
     
@@ -135,17 +133,17 @@ export default function ProfilePage() {
       })
       
       if (response.ok) {
-        toast.success('Sunucu başarıyla silindi')
+        toast.success(t('profile.deleteSuccess'))
         fetchServers()
-        fetchProfile() // Update stats
-        fetchActivity() // Update activity
+        fetchProfile()
+        fetchActivity()
       } else {
         const error = await response.json()
-        toast.error(error.error || 'Sunucu silinirken hata oluştu')
+        toast.error(error.error || t('profile.deleteError'))
       }
     } catch (error) {
       console.error('Error:', error)
-      toast.error('Bir hata oluştu')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setDeleting(null)
     }
@@ -156,7 +154,7 @@ export default function ProfilePage() {
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
-          <p className="mt-4 text-gray-400">Yükléniyor...</p>
+          <p className="mt-4 text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     )
@@ -168,11 +166,14 @@ export default function ProfilePage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] py-12">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Profilim</h1>
+          <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
           <Link href="/">
-            <Button variant="outline" className="border-gray-700">Ana Sayfa</Button>
+            <Button variant="outline" className="border-gray-700">{t('common.homePage')}</Button>
           </Link>
         </div>
         
@@ -192,13 +193,13 @@ export default function ProfilePage() {
                 <h2 className="text-2xl font-bold">{profile?.username}</h2>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-400 mt-2">
                   <Calendar className="w-4 h-4" />
-                  <span>Üyelik: {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('tr-TR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Yeni'}</span>
+                  <span>{t('profile.memberSince')} {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''}</span>
                 </div>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="minecraft">Minecraft Kullanıcı Adı</Label>
+                  <Label htmlFor="minecraft">{t('profile.minecraftUsername')}</Label>
                   <div className="flex gap-2 mt-2">
                     <Input
                       id="minecraft"
@@ -212,34 +213,34 @@ export default function ProfilePage() {
                       disabled={saving}
                       className="bg-green-600 hover:bg-green-700"
                     >
-                      {saving ? 'Kayıt...' : 'Kaydet'}
+                      {saving ? t('profile.saving') : t('profile.save')}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Avatar crafatar.com’dan alınır</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('profile.avatarHelp')}</p>
                 </div>
                 
                 <div className="pt-4 border-t border-gray-700">
                   <div className="flex items-center gap-2 text-sm mb-2">
                     <Mail className="w-4 h-4" />
-                    <span className="text-gray-400">E-posta:</span>
+                    <span className="text-gray-400">{t('profile.email')}</span>
                   </div>
                   <p className="text-sm">{profile?.email}</p>
                   {profile?.emailVerified ? (
-                    <Badge className="bg-green-600 mt-2">✓ Doğrulandı</Badge>
+                    <Badge className="bg-green-600 mt-2">{t('profile.verified')}</Badge>
                   ) : (
-                    <Badge className="bg-yellow-600 mt-2">⚠ Beklemede</Badge>
+                    <Badge className="bg-yellow-600 mt-2">{t('profile.pending')}</Badge>
                   )}
                 </div>
                 
                 <div className="pt-4 border-t border-gray-700 space-y-2">
                   <Link href="/profile/change-password">
                     <Button variant="outline" className="w-full border-gray-700">
-                      🔒 Şifre Değiştir
+                      {t('profile.changePassword')}
                     </Button>
                   </Link>
-                  <Link href="/admin/tickets">
+                  <Link href="/tickets">
                     <Button variant="outline" className="w-full border-gray-700">
-                      🎫 Destek Taleplerim
+                      {t('profile.myTickets')}
                       {profile?.stats?.openTickets > 0 && (
                         <Badge className="ml-2 bg-red-600">{profile.stats.openTickets}</Badge>
                       )}
@@ -257,11 +258,11 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold flex items-center gap-2">
                   <Server className="w-5 h-5 text-green-500" />
-                  Sunucularım
+                  {t('profile.myServers')}
                 </h3>
                 <Link href="/submit">
                   <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                    + Yeni Sunucu
+                    {t('profile.newServer')}
                   </Button>
                 </Link>
               </div>
@@ -269,15 +270,15 @@ export default function ProfilePage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="bg-gray-900 p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold text-green-500">{profile?.stats?.serverCount || 0}</div>
-                  <div className="text-sm text-gray-400">Toplam Sunucu</div>
+                  <div className="text-sm text-gray-400">{t('profile.totalServers')}</div>
                 </div>
                 <div className="bg-gray-900 p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold text-yellow-500">{profile?.stats?.totalVotes?.toLocaleString() || 0}</div>
-                  <div className="text-sm text-gray-400">Toplam Oy</div>
+                  <div className="text-sm text-gray-400">{t('profile.totalVotes')}</div>
                 </div>
                 <div className="bg-gray-900 p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold text-blue-500">0</div>
-                  <div className="text-sm text-gray-400">Toplam Oyuncu</div>
+                  <div className="text-sm text-gray-400">{t('profile.totalPlayers')}</div>
                 </div>
               </div>
               
@@ -285,10 +286,10 @@ export default function ProfilePage() {
                 {servers.length === 0 ? (
                   <div className="text-center py-8 text-gray-400">
                     <Server className="w-12 h-12 mx-auto mb-3 text-gray-600" />
-                    <p>Henüz sunucu eklenmemiş</p>
+                    <p>{t('profile.noServers')}</p>
                     <Link href="/submit">
                       <Button size="sm" className="mt-3 bg-green-600 hover:bg-green-700">
-                        İlk Sunucunu Ekle
+                        {t('profile.addFirstServer')}
                       </Button>
                     </Link>
                   </div>
@@ -299,15 +300,15 @@ export default function ProfilePage() {
                         <div className="flex-1">
                           <h4 className="font-bold">🎮 {server.name}</h4>
                           <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
-                            <span>Durum: {server.status === 'approved' ? '✅ Onaylandı' : server.status === 'pending' ? '⏳ Onay Bekliyor' : '❌ Reddedildi'}</span>
+                            <span>{t('profile.serverStatus')} {server.status === 'approved' ? t('profile.approved') : server.status === 'pending' ? t('profile.pendingApproval') : t('profile.rejected')}</span>
                             <span>•</span>
-                            <span>Oy: {server.voteCount || 0}</span>
+                            <span>{t('profile.totalVotes')}: {server.voteCount || 0}</span>
                           </div>
                         </div>
                         <div className="flex gap-2">
                           <Link href={`/admin/servers/${server.id}/edit`}>
                             <Button size="sm" variant="outline" className="border-gray-700">
-                              Düzenle
+                              {t('profile.edit')}
                             </Button>
                           </Link>
                           <Link href={`/server/${server.id}`}>
@@ -336,12 +337,12 @@ export default function ProfilePage() {
             <Card className="bg-[#0f0f0f] border-gray-800 p-6">
               <h3 className="text-xl font-bold flex items-center gap-2 mb-4">
                 <Activity className="w-5 h-5 text-green-500" />
-                Aktivite Geçmişi
+                {t('profile.activityHistory')}
               </h3>
               
               <div className="space-y-3">
                 {activities.length === 0 ? (
-                  <p className="text-gray-400 text-center py-4">Henüz aktivite yok</p>
+                  <p className="text-gray-400 text-center py-4">{t('profile.noActivity')}</p>
                 ) : (
                   activities.map((activity) => (
                     <div key={activity.id} className="flex items-start gap-3 text-sm">
@@ -349,7 +350,7 @@ export default function ProfilePage() {
                       <div className="flex-1">
                         <span className="text-gray-300">{activity.description}</span>
                         <span className="text-gray-500 text-xs ml-2">
-                          {new Date(activity.createdAt).toLocaleDateString('tr-TR')}
+                          {new Date(activity.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US')}
                         </span>
                       </div>
                     </div>
