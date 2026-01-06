@@ -61,13 +61,14 @@ export default function ServerDetailPage() {
   const checkVoteStatus = async () => {
     try {
       const response = await fetch(`/api/servers/${serverId}/can-vote`)
+      const data = await response.json()
+      
       if (response.ok) {
-        const data = await response.json()
         setCanVote(data.canVote)
-        setVoteTimeLeft(data.timeUntilNextVote)
+        setVoteTimeLeft(data.timeLeft || 0)
       }
     } catch (error) {
-      console.error('Error checking vote status:', error)
+      console.error('Check vote error:', error)
     }
   }
   
