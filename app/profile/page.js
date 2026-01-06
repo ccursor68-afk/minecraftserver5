@@ -108,8 +108,10 @@ export default function ProfilePage() {
       if (response.ok) {
         toast.success('Minecraft kullanıcı adı güncellendi!')
         await fetchProfile()
+        // Notify other components about profile update
+        window.dispatchEvent(new Event('profileUpdated'))
         // Force refresh to update avatar
-        window.location.reload()
+        setTimeout(() => window.location.reload(), 500)
       } else {
         toast.error(data.error || 'Güncellenemedi')
       }
