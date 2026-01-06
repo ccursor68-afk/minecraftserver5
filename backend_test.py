@@ -558,6 +558,12 @@ class MinecraftServerListTester:
             self.test_patch_ticket_close,    # Test ticket close
             self.test_delete_ticket,         # Test ticket delete
             self.test_delete_server,         # Test server delete
+            # Blog API Tests
+            self.test_post_blog_category,    # Create category first
+            self.test_get_blog_posts,        # Get posts (may be empty initially)
+            self.test_post_blog_post,        # Create post (needs category and user)
+            self.test_delete_blog_post,      # Delete post (cascade test)
+            self.test_delete_blog_category,  # Delete category (cascade test)
             self.test_error_handling,        # Test error cases
         ]
         
@@ -595,14 +601,14 @@ class MinecraftServerListTester:
         print("\n🎯 CRITICAL ISSUES:")
         critical_failures = []
         for result in self.test_results:
-            if not result['success'] and 'admin' in result['test']:
+            if not result['success'] and ('admin' in result['test'] or 'blog' in result['test']):
                 critical_failures.append(result['test'])
         
         if critical_failures:
             for failure in critical_failures:
                 print(f"  - {failure}")
         else:
-            print("  None - All admin endpoints working correctly!")
+            print("  None - All admin and blog endpoints working correctly!")
         
         return passed == total
 
