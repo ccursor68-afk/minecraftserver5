@@ -286,7 +286,7 @@ export default function ServerDetailPage() {
                         </p>
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="bg-[#0f0f0f] border-gray-800">
+                    <DialogContent className="bg-[#0f0f0f] border-gray-800 max-w-md">
                       <DialogHeader>
                         <DialogTitle className="text-2xl">Vote for {server.name}</DialogTitle>
                         <DialogDescription>
@@ -295,21 +295,70 @@ export default function ServerDetailPage() {
                       </DialogHeader>
                       
                       <div className="space-y-4 py-4">
-                        {/* reCAPTCHA Placeholder */}
-                        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 text-center">
-                          <p className="text-gray-400 text-sm mb-2">reCAPTCHA verification</p>
-                          <div className="bg-gray-900 h-20 rounded flex items-center justify-center">
-                            <p className="text-gray-500 text-xs">reCAPTCHA will appear here when configured</p>
+                        {/* Minecraft Username Input */}
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium">Minecraft Username *</label>
+                          <Input
+                            type="text"
+                            placeholder="Enter your Minecraft username"
+                            value={minecraftUsername}
+                            onChange={(e) => setMinecraftUsername(e.target.value)}
+                            className="bg-gray-800 border-gray-700"
+                            disabled={voting}
+                          />
+                          <p className="text-xs text-gray-400">This username will be sent to the server for rewards</p>
+                        </div>
+                        
+                        {/* Cloudflare Turnstile Placeholder */}
+                        <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+                          <div className="flex items-center justify-center h-16 bg-gray-900 rounded">
+                            <p className="text-gray-500 text-sm">🔒 Cloudflare Turnstile Verification</p>
                           </div>
                         </div>
                         
-                        <Button
-                          onClick={handleVote}
-                          disabled={voting || !canVote}
-                          className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg font-bold"
-                        >
-                          {voting ? 'Voting...' : '🗳️ Confirm Vote'}
-                        </Button>
+                        {/* Privacy Policy Checkbox */}
+                        <div className="flex items-start gap-2">
+                          <input
+                            type="checkbox"
+                            id="privacy"
+                            checked={agreePrivacy}
+                            onChange={(e) => setAgreePrivacy(e.target.checked)}
+                            className="mt-1 cursor-pointer"
+                            disabled={voting}
+                          />
+                          <label htmlFor="privacy" className="text-sm text-gray-300 cursor-pointer">
+                            I agree to the{' '}
+                            <Link href="/privacy" target="_blank" className="text-green-500 hover:underline">
+                              Privacy Policy
+                            </Link>
+                            {' '}and understand my username will be sent to the server
+                          </label>
+                        </div>
+                        
+                        {/* Buttons */}
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={handleVote}
+                            disabled={voting || !canVote || !minecraftUsername.trim() || !agreePrivacy}
+                            className="flex-1 bg-green-600 hover:bg-green-700 h-11 text-base font-semibold"
+                          >
+                            {voting ? 'Voting...' : '✔ Vote'}
+                          </Button>
+                          <Button
+                            onClick={() => setVoteDialogOpen(false)}
+                            variant="outline"
+                            disabled={voting}
+                            className="flex-1 border-gray-700 hover:bg-gray-800 h-11"
+                          >
+                            Back to server page
+                          </Button>
+                        </div>
+                        
+                        {!canVote && voteTimeLeft > 0 && (
+                          <p className="text-center text-sm text-yellow-500">
+                            ⏱️ You can vote again in {Math.ceil(voteTimeLeft / (1000 * 60 * 60))} hours
+                          </p>
+                        )}
                       </div>
                     </DialogContent>
                   </Dialog>
