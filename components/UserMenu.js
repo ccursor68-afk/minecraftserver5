@@ -7,9 +7,11 @@ import { LogIn, UserPlus, User, Plus, Lock, Ticket, LogOut, ChevronDown } from '
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function UserMenu() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [isOpen, setIsOpen] = useState(false)
@@ -79,13 +81,13 @@ export default function UserMenu() {
         <Link href="/auth/login">
           <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
             <LogIn className="w-4 h-4 mr-1" />
-            Login
+            {t('nav.login')}
           </Button>
         </Link>
         <Link href="/auth/register">
           <Button size="sm" className="bg-green-600 hover:bg-green-700">
             <UserPlus className="w-4 h-4 mr-1" />
-            Sign Up
+            {t('nav.register')}
           </Button>
         </Link>
       </div>
@@ -125,28 +127,28 @@ export default function UserMenu() {
             <Link href="/submit" onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2">
                 <Plus className="w-4 h-4 text-green-500" />
-                <span>Sunucu Ekle</span>
+                <span>{t('nav.addServer')}</span>
               </button>
             </Link>
             
             <Link href="/profile" onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2">
                 <User className="w-4 h-4 text-blue-500" />
-                <span>Profilim</span>
+                <span>{t('nav.profile')}</span>
               </button>
             </Link>
             
             <Link href="/profile/change-password" onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2">
                 <Lock className="w-4 h-4 text-yellow-500" />
-                <span>Şifre Değiştir</span>
+                <span>{t('nav.changePassword')}</span>
               </button>
             </Link>
             
             <Link href="/tickets" onClick={() => setIsOpen(false)}>
               <button className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2">
                 <Ticket className="w-4 h-4 text-purple-500" />
-                <span>Destek Taleplerim</span>
+                <span>{t('nav.myTickets')}</span>
                 {profile?.stats?.openTickets > 0 && (
                   <Badge className="ml-auto bg-red-600 text-xs">{profile.stats.openTickets}</Badge>
                 )}
@@ -160,7 +162,7 @@ export default function UserMenu() {
               className="w-full px-4 py-2 text-left hover:bg-gray-800 transition-colors flex items-center gap-2 text-red-500"
             >
               <LogOut className="w-4 h-4" />
-              <span>Çıkış Yap</span>
+              <span>{t('nav.logout')}</span>
             </button>
           </div>
         </div>
