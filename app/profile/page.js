@@ -121,6 +121,34 @@ export default function ProfilePage() {
     }
   }
   
+  const deleteServer = async (serverId, serverName) => {
+    if (!confirm(`"${serverName}" sunucusunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!`)) {
+      return
+    }
+    
+    setDeleting(serverId)
+    try {
+      const response = await fetch(`/api/servers/my/${serverId}`, {
+        method: 'DELETE'
+      })
+      
+      if (response.ok) {
+        toast.success('Sunucu başarıyla silindi')
+        fetchServers()
+        fetchProfile() // Update stats
+        fetchActivity() // Update activity
+      } else {
+        const error = await response.json()
+        toast.error(error.error || 'Sunucu silinirken hata oluştu')
+      }
+    } catch (error) {
+      console.error('Error:', error)
+      toast.error('Bir hata oluştu')
+    } finally {
+      setDeleting(null)
+    }
+  }
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
