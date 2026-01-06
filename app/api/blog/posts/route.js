@@ -5,8 +5,42 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url)
   const categoryId = searchParams.get('categoryId')
   const categorySlug = searchParams.get('categorySlug')
+  const postSlug = searchParams.get('slug')
   
   try {
+    // If getting a single post by slug
+    if (postSlug) {
+      const { data: post, error } = await supabaseAdmin
+        .from('blog_posts')
+        .select('*')
+        .eq('slug', postSlug)
+        .single()
+      
+      if (error || !post) {
+        console.error('Post not found:', error)
+        return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+      }
+      
+      // Increment view count
+      await supabaseAdmin
+        .from('blog_posts')
+        .update({ viewCount: (post.viewCount || 0) + 1 })
+        .eq('id', post.id)
+      
+      // Get post replies
+      const { data: replies } = await supabaseAdmin
+        .from('blog_replies')
+        .select('*')
+        .eq('postId', post.id)
+        .order('createdAt', { ascending: true })
+      
+      return NextResponse.json({
+        ...post,
+        viewCount: (post.viewCount || 0) + 1,
+        replies: replies || []
+      })
+    }
+    
     let query = supabaseAdmin
       .from('blog_posts')
       .select('*')
