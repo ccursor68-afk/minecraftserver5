@@ -19,10 +19,12 @@ import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 import UserMenu from '@/components/UserMenu'
 import Footer from '@/components/Footer'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 // Game mode categories
 const GAME_MODES = [
-  { id: 'all', name: 'All', icon: '🎮' },
+  { id: 'all', name: 'all', icon: '🎮' },
   { id: 'Survival', name: 'Survival', icon: '🏕️' },
   { id: 'Skyblock', name: 'Skyblock', icon: '🏝️' },
   { id: 'Bedwars', name: 'Bedwars', icon: '🛏️' },
@@ -38,14 +40,15 @@ const GAME_MODES = [
 
 // Platform filters
 const PLATFORMS = [
-  { id: 'all', name: 'All Platforms', icon: '🎮', color: 'bg-gray-600' },
-  { id: 'java', name: 'Java', icon: '☕', color: 'bg-orange-600' },
-  { id: 'bedrock', name: 'Bedrock', icon: '🎮', color: 'bg-green-600' },
-  { id: 'crossplay', name: 'Crossplay', icon: '🔀', color: 'bg-blue-600' },
+  { id: 'all', name: 'all', icon: '🎮', color: 'bg-gray-600' },
+  { id: 'java', name: 'java', icon: '☕', color: 'bg-orange-600' },
+  { id: 'bedrock', name: 'bedrock', icon: '🎮', color: 'bg-green-600' },
+  { id: 'crossplay', name: 'crossplay', icon: '🔀', color: 'bg-blue-600' },
 ]
 
 export default function HomePage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [servers, setServers] = useState([])
   const [topBanners, setTopBanners] = useState([])
   const [bottomBanners, setBottomBanners] = useState([])
@@ -120,6 +123,15 @@ export default function HomePage() {
     const matchesPlatform = platformFilter === 'all' || true
     return matchesSearch && matchesCategory && matchesPlatform
   })
+
+  const getGameModeName = (mode) => {
+    if (mode.id === 'all') return t('gameModes.all')
+    return t(`gameModes.${mode.id}`) || mode.name
+  }
+
+  const getPlatformName = (platform) => {
+    return t(`platforms.${platform.id}`) || platform.name
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a]">
@@ -130,30 +142,33 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <Gamepad2 className="w-8 h-8 text-green-500" />
               <div>
-                <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
-                <p className="text-xs text-gray-400">Best Minecraft Servers 2025</p>
+                <h1 className="text-2xl font-bold text-green-500">{t('home.title')}</h1>
+                <p className="text-xs text-gray-400">{t('home.subtitle')}</p>
               </div>
             </div>
             <nav className="hidden md:flex items-center gap-6 text-sm">
               <Link href="/" className="text-green-500 hover:text-green-400 transition-colors">
-                🎮 Servers
+                🎮 {t('nav.servers')}
               </Link>
               <Link href="/blog" className="text-gray-400 hover:text-green-400 transition-colors">
-                📰 Blog
+                📰 {t('nav.blog')}
               </Link>
               {user && (
                 <Link href="/tickets" className="text-gray-400 hover:text-green-400 transition-colors">
-                  🎫 Support
+                  🎫 {t('nav.support')}
                 </Link>
               )}
               {userRole === 'admin' && (
                 <Link href="/admin" className="text-yellow-500 hover:text-yellow-400 transition-colors">
                   <Shield className="w-4 h-4 inline mr-1" />
-                  Admin
+                  {t('nav.admin')}
                 </Link>
               )}
             </nav>
-            <UserMenu />
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>
@@ -176,12 +191,12 @@ export default function HomePage() {
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-2xl">📢</span>
                   <div>
-                    <p className="text-green-400 font-bold">Advertise Your Server Here!</p>
-                    <p className="text-gray-400 text-sm">Get more players by featuring your server in our banner section</p>
+                    <p className="text-green-400 font-bold">{t('home.advertise')}</p>
+                    <p className="text-gray-400 text-sm">{t('home.advertiseDesc')}</p>
                   </div>
                   <Link href="/submit">
                     <Button size="sm" className="bg-green-600 hover:bg-green-700 ml-4">
-                      Get Featured
+                      {t('home.getFeatured')}
                     </Button>
                   </Link>
                 </div>
@@ -196,12 +211,12 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <h2 className="text-5xl font-bold">
-              <span className="text-white">Find the Best</span>
+              <span className="text-white">{t('home.heroTitle')}</span>
               <br />
-              <span className="text-green-500">Minecraft Servers</span>
+              <span className="text-green-500">{t('home.heroTitle2')}</span>
             </h2>
             <p className="text-xl text-gray-400">
-              Vote for your favorite servers and help them reach the top!
+              {t('home.heroSubtitle')}
             </p>
             
             {/* Search Bar */}
@@ -210,7 +225,7 @@ export default function HomePage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Search servers..."
+                  placeholder={t('home.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 bg-gray-900 border-gray-700 focus:border-green-500 text-white"
@@ -224,7 +239,7 @@ export default function HomePage() {
                 <SelectContent>
                   {GAME_MODES.map(mode => (
                     <SelectItem key={mode.id} value={mode.id}>
-                      {mode.icon} {mode.name}
+                      {mode.icon} {getGameModeName(mode)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -238,7 +253,7 @@ export default function HomePage() {
       <section className="py-6 border-b border-gray-800">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <p className="text-sm text-gray-400 mb-4">Filter by Platform</p>
+            <p className="text-sm text-gray-400 mb-4">{t('home.filterByPlatform')}</p>
             <div className="flex justify-center gap-3 flex-wrap">
               {PLATFORMS.map(platform => (
                 <Button
@@ -246,7 +261,7 @@ export default function HomePage() {
                   onClick={() => setPlatformFilter(platform.id)}
                   className={`${platformFilter === platform.id ? platform.color : 'bg-gray-700'} hover:opacity-90`}
                 >
-                  {platform.icon} {platform.name}
+                  {platform.icon} {getPlatformName(platform)}
                 </Button>
               ))}
             </div>
@@ -258,7 +273,7 @@ export default function HomePage() {
       <section className="py-6 border-b border-gray-800 bg-gray-900/30">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <p className="text-sm text-gray-400 mb-4">Filter by Game Mode</p>
+            <p className="text-sm text-gray-400 mb-4">{t('home.filterByGameMode')}</p>
             <div className="flex justify-center gap-2 flex-wrap max-w-4xl mx-auto">
               {GAME_MODES.map(mode => (
                 <Button
@@ -271,7 +286,7 @@ export default function HomePage() {
                     : 'border-gray-700 hover:border-green-500 hover:text-green-400'
                   }
                 >
-                  {mode.icon} {mode.name}
+                  {mode.icon} {getGameModeName(mode)}
                 </Button>
               ))}
             </div>
@@ -285,17 +300,17 @@ export default function HomePage() {
           <div className="flex gap-6">
             {/* Main Content */}
             <div className="flex-1">
-              <h3 className="text-2xl font-bold mb-6 text-center">🏆 Top Minecraft Servers</h3>
+              <h3 className="text-2xl font-bold mb-6 text-center">{t('home.topServers')}</h3>
               
               {loading ? (
                 <div className="text-center py-12">
                   <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
-                  <p className="mt-4 text-gray-400">Loading servers...</p>
+                  <p className="mt-4 text-gray-400">{t('home.loading')}</p>
                 </div>
               ) : filteredServers.length === 0 ? (
                 <div className="text-center py-12">
-                  <p className="text-gray-400 text-lg">No servers found</p>
-                  <p className="text-gray-500 text-sm mt-2">Try adjusting your filters</p>
+                  <p className="text-gray-400 text-lg">{t('home.noServers')}</p>
+                  <p className="text-gray-500 text-sm mt-2">{t('home.adjustFilters')}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -313,7 +328,7 @@ export default function HomePage() {
                             {/* Featured Badge */}
                             {index < 6 && (
                               <div className="absolute top-2 left-20">
-                                <Badge className="bg-orange-600 text-xs">FEATURED</Badge>
+                                <Badge className="bg-orange-600 text-xs">{t('home.featured')}</Badge>
                               </div>
                             )}
                             
@@ -348,7 +363,7 @@ export default function HomePage() {
                               <div className="flex items-center justify-end gap-2">
                                 <div className={`w-2 h-2 rounded-full ${server.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
                                 <span className="text-sm font-medium">
-                                  {server.onlinePlayers?.toLocaleString() || 0} players
+                                  {server.onlinePlayers?.toLocaleString() || 0} {t('home.players')}
                                 </span>
                               </div>
                               <div className="flex items-center justify-end gap-2 text-gray-400">
@@ -362,7 +377,7 @@ export default function HomePage() {
                             {/* Vote Button */}
                             <div className="flex-shrink-0">
                               <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-6">
-                                Join Now!
+                                {t('home.joinNow')}
                               </Button>
                               <p className="text-center text-xs text-gray-500 mt-1">{server.ip}</p>
                             </div>
@@ -398,7 +413,7 @@ export default function HomePage() {
             {sidebarBanners.length > 0 && (
               <div className="hidden lg:block w-[300px] flex-shrink-0">
                 <div className="sticky top-24 space-y-4">
-                  <h3 className="text-lg font-bold mb-4">Sponsored</h3>
+                  <h3 className="text-lg font-bold mb-4">{t('home.sponsored')}</h3>
                   {sidebarBanners.map((banner) => (
                     <a 
                       key={banner.id}
@@ -439,12 +454,12 @@ export default function HomePage() {
                 <div className="flex items-center justify-center gap-3">
                   <span className="text-2xl">🚀</span>
                   <div>
-                    <p className="text-purple-400 font-bold">Boost Your Server Visibility!</p>
-                    <p className="text-gray-400 text-sm">Premium banner spots available - reach thousands of players daily</p>
+                    <p className="text-purple-400 font-bold">{t('home.boostVisibility')}</p>
+                    <p className="text-gray-400 text-sm">{t('home.boostDesc')}</p>
                   </div>
                   <Link href="/submit">
                     <Button size="sm" className="bg-purple-600 hover:bg-purple-700 ml-4">
-                      Learn More
+                      {t('home.learnMore')}
                     </Button>
                   </Link>
                 </div>
