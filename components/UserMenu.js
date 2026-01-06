@@ -38,6 +38,13 @@ export default function UserMenu() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     checkUser()
     
+    // Listen for profile updates
+    const handleProfileUpdate = () => {
+      checkUser()
+    }
+    
+    window.addEventListener('profileUpdated', handleProfileUpdate)
+    
     // Close dropdown when clicking outside
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -46,7 +53,10 @@ export default function UserMenu() {
     }
     
     document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      window.removeEventListener('profileUpdated', handleProfileUpdate)
+    }
   }, [])
   
   const handleLogout = async () => {
