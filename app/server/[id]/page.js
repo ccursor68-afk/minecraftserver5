@@ -463,6 +463,36 @@ export default function ServerDetailPage() {
                 Vote for this server to receive in-game rewards! Rewards are delivered automatically via Votifier.
               </p>
             </Card>
+            
+            {/* Top Voters */}
+            <Card className="bg-[#0f0f0f] border-gray-800 p-6">
+              <h3 className="text-xl font-bold mb-4">🏆 Top Voters This Month</h3>
+              {topVoters.length === 0 ? (
+                <div className="text-center py-8 text-gray-400">
+                  <p className="text-sm">No votes yet this month</p>
+                  <p className="text-xs mt-1">Be the first to vote!</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="grid grid-cols-2 gap-2 pb-2 border-b border-gray-800 text-sm font-semibold text-gray-400">
+                    <span>Nickname</span>
+                    <span className="text-right">Vote(s)</span>
+                  </div>
+                  {topVoters.map((voter, index) => (
+                    <div key={index} className="grid grid-cols-2 gap-2 py-2 border-b border-gray-900/50 hover:bg-gray-900/30">
+                      <div className="flex items-center gap-2">
+                        {index === 0 && <span className="text-yellow-500">🥇</span>}
+                        {index === 1 && <span className="text-gray-400">🥈</span>}
+                        {index === 2 && <span className="text-orange-600">🥉</span>}
+                        {index > 2 && <span className="text-gray-600 text-sm">#{index + 1}</span>}
+                        <span className="font-medium truncate">{voter.minecraftUsername}</span>
+                      </div>
+                      <span className="text-right text-green-500 font-bold">{voter.voteCount}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
           </div>
         </div>
       </div>
