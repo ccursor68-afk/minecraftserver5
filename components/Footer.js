@@ -2,8 +2,11 @@
 
 import Link from 'next/link'
 import { Gamepad2, Mail, MessageCircle, Heart } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Footer() {
+  const { t } = useLanguage()
+  
   return (
     <footer className="bg-[#0a0a0a] border-t border-gray-800 mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -15,35 +18,35 @@ export default function Footer() {
               <span className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</span>
             </Link>
             <p className="text-gray-400 text-sm mb-4">
-              En iyi Minecraft sunucularını keşfedin! Sunucunuzu listeleyerek binlerce oyuncuya ulaşın.
+              {t('footer.description')}
             </p>
             <p className="text-gray-500 text-xs">
-              Not affiliated with Mojang Studios or Microsoft.
+              {t('footer.notAffiliated')}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Hızlı Bağlantılar</h3>
+            <h3 className="text-lg font-bold mb-4">{t('footer.quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Ana Sayfa
+                  {t('footer.home')}
                 </Link>
               </li>
               <li>
                 <Link href="/submit" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Sunucu Ekle
+                  {t('footer.addServer')}
                 </Link>
               </li>
               <li>
                 <Link href="/blog" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Blog
+                  {t('footer.blog')}
                 </Link>
               </li>
               <li>
-                <Link href="/admin/tickets/create" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Destek
+                <Link href="/tickets/create" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
+                  {t('footer.support')}
                 </Link>
               </li>
             </ul>
@@ -51,21 +54,21 @@ export default function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="text-lg font-bold mb-4">Yasal</h3>
+            <h3 className="text-lg font-bold mb-4">{t('footer.legal')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link href="/privacy" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Gizlilik Politikası
+                  {t('footer.privacy')}
                 </Link>
               </li>
               <li>
                 <Link href="/terms" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  Kullanım Koşulları
+                  {t('footer.terms')}
                 </Link>
               </li>
               <li>
-                <Link href="/admin/tickets/create" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
-                  İletişim
+                <Link href="/tickets/create" className="text-gray-400 hover:text-green-500 transition-colors text-sm">
+                  {t('footer.contact')}
                 </Link>
               </li>
             </ul>
@@ -76,7 +79,7 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Minecraft Server List. Tüm hakları saklıdır.
+              © {new Date().getFullYear()} Minecraft Server List. {t('footer.rights')}
             </p>
             
             {/* Social Links */}
@@ -100,7 +103,7 @@ export default function Footer() {
             </div>
             
             <p className="text-gray-500 text-sm flex items-center gap-1">
-              Made with <Heart className="w-4 h-4 text-red-500" /> for Minecraft Community
+              {t('footer.madeWith')} <Heart className="w-4 h-4 text-red-500" /> {t('footer.love')}
             </p>
           </div>
         </div>
