@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the admin API endpoints for a Minecraft Server List application using Supabase"
+user_problem_statement: "Test the admin API endpoints for a Minecraft Server List application using Supabase. Added Blog Category and Post management features with delete functionality."
 
 backend:
   - task: "GET /api/admin/users - Get all users"
