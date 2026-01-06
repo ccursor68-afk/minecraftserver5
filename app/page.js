@@ -324,92 +324,142 @@ export default function HomePage() {
       {/* Server List */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl font-bold mb-6 text-center">🏆 Top Minecraft Servers</h3>
-          
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
-              <p className="mt-4 text-gray-400">Loading servers...</p>
-            </div>
-          ) : filteredServers.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No servers found</p>
-              <p className="text-gray-500 text-sm mt-2">Try adjusting your filters</p>
-            </div>
-          ) : (
-            <div className="space-y-4 max-w-5xl mx-auto">
-              {filteredServers.map((server, index) => (
-                <Card key={server.id} className="bg-[#0f0f0f] border-gray-800 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/10 relative overflow-hidden">
-                  <Link href={`/server/${server.id}`}>
-                    <div className="p-4 flex items-center gap-4">
-                      {/* Rank */}
-                      <div className="flex-shrink-0 w-16 text-center">
-                        <div className="text-3xl font-bold text-gray-500">{index + 1}.</div>
-                        {index < 3 && <Trophy className="w-6 h-6 mx-auto text-yellow-500 mt-1" />}
-                      </div>
+          <div className="flex gap-6">
+            {/* Main Content */}
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold mb-6 text-center">🏆 Top Minecraft Servers</h3>
+              
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
+                  <p className="mt-4 text-gray-400">Loading servers...</p>
+                </div>
+              ) : filteredServers.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-400 text-lg">No servers found</p>
+                  <p className="text-gray-500 text-sm mt-2">Try adjusting your filters</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredServers.map((server, index) => (
+                    <div key={server.id}>
+                      <Card className="bg-[#0f0f0f] border-gray-800 hover:border-green-500/50 transition-all hover:shadow-lg hover:shadow-green-500/10 relative overflow-hidden">
+                        <Link href={`/server/${server.id}`}>
+                          <div className="p-4 flex items-center gap-4">
+                            {/* Rank */}
+                            <div className="flex-shrink-0 w-16 text-center">
+                              <div className="text-3xl font-bold text-gray-500">{index + 1}.</div>
+                              {index < 3 && <Trophy className="w-6 h-6 mx-auto text-yellow-500 mt-1" />}
+                            </div>
+                            
+                            {/* Featured Badge */}
+                            {index < 6 && (
+                              <div className="absolute top-2 left-20">
+                                <Badge className="bg-orange-600 text-xs">FEATURED</Badge>
+                              </div>
+                            )}
+                            
+                            {/* Banner */}
+                            <div className="flex-shrink-0">
+                              <img
+                                src={server.bannerUrl}
+                                alt={server.name}
+                                className="w-[300px] lg:w-[468px] h-[60px] object-cover rounded border border-gray-700"
+                              />
+                            </div>
+                            
+                            {/* Server Info */}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-xl font-bold text-white mb-1 truncate">{server.name}</h3>
+                              <p className="text-sm text-gray-400 mb-2 line-clamp-1">{server.shortDescription}</p>
+                              <div className="flex flex-wrap gap-2">
+                                <Badge variant="outline" className="border-green-600 text-green-400 text-xs">
+                                  ☕ Java
+                                </Badge>
+                                <Badge variant="outline" className="border-green-600 text-green-400 text-xs">
+                                  🎮 Bedrock
+                                </Badge>
+                                <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs">
+                                  {server.category}
+                                </Badge>
+                              </div>
+                            </div>
+                            
+                            {/* Stats */}
+                            <div className="flex-shrink-0 text-right space-y-2 hidden md:block">
+                              <div className="flex items-center justify-end gap-2">
+                                <div className={`w-2 h-2 rounded-full ${server.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                <span className="text-sm font-medium">
+                                  {server.onlinePlayers?.toLocaleString() || 0} players
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-end gap-2 text-gray-400">
+                                <Users className="w-4 h-4" />
+                                <span className="text-xs">
+                                  {server.onlinePlayers?.toLocaleString() || 0} / {server.maxPlayers?.toLocaleString() || 0}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            {/* Vote Button */}
+                            <div className="flex-shrink-0">
+                              <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-6">
+                                Join Now!
+                              </Button>
+                              <p className="text-center text-xs text-gray-500 mt-1">{server.ip}</p>
+                            </div>
+                          </div>
+                        </Link>
+                      </Card>
                       
-                      {/* Featured Badge */}
-                      {index < 6 && (
-                        <div className="absolute top-2 left-20">
-                          <Badge className="bg-orange-600 text-xs">FEATURED</Badge>
+                      {/* Between Servers Banner - Show after every 5 servers */}
+                      {(index + 1) % 5 === 0 && betweenServersBanners.length > 0 && (
+                        <div className="my-4">
+                          <a 
+                            href={betweenServersBanners[Math.floor(index / 5) % betweenServersBanners.length].linkUrl || '#'} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="block"
+                          >
+                            <img
+                              src={betweenServersBanners[Math.floor(index / 5) % betweenServersBanners.length].imageUrl}
+                              alt={betweenServersBanners[Math.floor(index / 5) % betweenServersBanners.length].serverName}
+                              className="w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
+                              style={{ maxHeight: '100px' }}
+                            />
+                          </a>
                         </div>
                       )}
-                      
-                      {/* Banner */}
-                      <div className="flex-shrink-0">
-                        <img
-                          src={server.bannerUrl}
-                          alt={server.name}
-                          className="w-[300px] lg:w-[468px] h-[60px] object-cover rounded border border-gray-700"
-                        />
-                      </div>
-                      
-                      {/* Server Info */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-xl font-bold text-white mb-1 truncate">{server.name}</h3>
-                        <p className="text-sm text-gray-400 mb-2 line-clamp-1">{server.shortDescription}</p>
-                        <div className="flex flex-wrap gap-2">
-                          <Badge variant="outline" className="border-green-600 text-green-400 text-xs">
-                            ☕ Java
-                          </Badge>
-                          <Badge variant="outline" className="border-green-600 text-green-400 text-xs">
-                            🎮 Bedrock
-                          </Badge>
-                          <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs">
-                            {server.category}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      {/* Stats */}
-                      <div className="flex-shrink-0 text-right space-y-2 hidden md:block">
-                        <div className="flex items-center justify-end gap-2">
-                          <div className={`w-2 h-2 rounded-full ${server.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                          <span className="text-sm font-medium">
-                            {server.onlinePlayers?.toLocaleString() || 0} players
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-end gap-2 text-gray-400">
-                          <Users className="w-4 h-4" />
-                          <span className="text-xs">
-                            {server.onlinePlayers?.toLocaleString() || 0} / {server.maxPlayers?.toLocaleString() || 0}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      {/* Vote Button */}
-                      <div className="flex-shrink-0">
-                        <Button className="bg-green-600 hover:bg-green-700 text-white font-bold px-6">
-                          Join Now!
-                        </Button>
-                        <p className="text-center text-xs text-gray-500 mt-1">{server.ip}</p>
-                      </div>
                     </div>
-                  </Link>
-                </Card>
-              ))}
+                  ))}
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Sidebar with Banners */}
+            {sidebarBanners.length > 0 && (
+              <div className="hidden lg:block w-[300px] flex-shrink-0">
+                <div className="sticky top-24 space-y-4">
+                  <h3 className="text-lg font-bold mb-4">Sponsored</h3>
+                  {sidebarBanners.map((banner) => (
+                    <a 
+                      key={banner.id}
+                      href={banner.linkUrl || '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="block"
+                    >
+                      <img
+                        src={banner.imageUrl}
+                        alt={banner.serverName}
+                        className="w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -417,11 +467,11 @@ export default function HomePage() {
       <section className="py-6 border-t border-gray-800 bg-gradient-to-r from-gray-900/50 to-gray-800/50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center">
-            {banners.length > 1 ? (
-              <a href={banners[1].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
+            {bottomBanners.length > 0 ? (
+              <a href={bottomBanners[0].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
                 <img 
-                  src={banners[1].imageUrl} 
-                  alt={banners[1].title}
+                  src={bottomBanners[0].imageUrl} 
+                  alt={bottomBanners[0].serverName}
                   className="max-w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
                   style={{ maxHeight: '90px' }}
                 />
