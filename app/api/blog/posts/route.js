@@ -10,10 +10,9 @@ export async function GET(request) {
     let query = supabaseAdmin
       .from('blog_posts')
       .select('*')
-      .eq('status', 'published')
-      .order('isPinned', { ascending: false })
-      // Order by createdAt if column exists, otherwise it will be ignored
-      .order('createdAt', { ascending: false })
+    
+    // Note: Status filter removed - if your table has a status column and you want to filter,
+    // uncomment the line below: query = query.eq('status', 'published')
     
     // Filter by categoryId if provided
     if (categoryId) {
@@ -21,20 +20,32 @@ export async function GET(request) {
     } 
     // If categorySlug is provided, first get the category ID
     else if (categorySlug) {
-      const { data: category } = await supabaseAdmin
+      const { data: category, error: catError } = await supabaseAdmin
         .from('blog_categories')
         .select('id')
         .eq('slug', categorySlug)
         .single()
       
-      if (category) {
-        query = query.eq('categoryId', category.id)
-      } else {
-        return NextResponse.json({ error: 'Category not found' }, { status: 404 })
+      if (catError || !category) {
+        console.error('Category lookup error:', catError)
+        return NextResponse.json({ error: 'Category not found', details: catError?.message }, { status: 404 })
       }
+      
+      query = query.eq('categoryId', category.id)
+    }
+    
+    // Order by isPinned first, then by createdAt if it exists
+    try {
+      query = query.order('isPinned', { ascending: false })
+      query = query.order('createdAt', { ascending: false })
+    } catch (e) {
+      // If ordering fails, just continue without ordering
+      console.warn('Ordering may have failed:', e)
     }
     
     const { data, error } = await query
+    
+    console.log('Posts query result:', { data: data?.length, error, categorySlug, categoryId })
     
     if (error) {
       console.error('Error fetching posts:', error)
