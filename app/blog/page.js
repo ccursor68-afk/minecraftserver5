@@ -9,8 +9,11 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function BlogPage() {
+  const { t } = useLanguage()
   const [categories, setCategories] = useState([])
   const [favorites, setFavorites] = useState([])
   const [user, setUser] = useState(null)
@@ -56,10 +59,10 @@ export default function BlogPage() {
     let newFavorites = [...favorites]
     if (favorites.includes(categoryId)) {
       newFavorites = favorites.filter(id => id !== categoryId)
-      toast.success('Favorilerden kaldırıldı')
+      toast.success(t('blog.removedFromFavorites'))
     } else {
       newFavorites.push(categoryId)
-      toast.success('Favorilere eklendi')
+      toast.success(t('blog.addedToFavorites'))
     }
     setFavorites(newFavorites)
     localStorage.setItem('blogFavorites', JSON.stringify(newFavorites))
@@ -86,9 +89,12 @@ export default function BlogPage() {
                 <p className="text-xs text-gray-400">Blog & Forum</p>
               </div>
             </Link>
-            <Link href="/">
-              <Button variant="outline" className="border-gray-700">Ana Sayfa</Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              <Link href="/">
+                <Button variant="outline" className="border-gray-700">{t('common.homePage')}</Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
@@ -97,15 +103,15 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto">
           {/* Hero */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">📰 Blog & Topluluk</h2>
-            <p className="text-xl text-gray-400 mb-6">Minecraft haberleri, rehberler ve daha fazlası</p>
+            <h2 className="text-4xl font-bold mb-4">{t('blog.title')}</h2>
+            <p className="text-xl text-gray-400 mb-6">{t('blog.subtitle')}</p>
             
             {/* Search */}
             <div className="max-w-2xl mx-auto relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Kategori ara..."
+                placeholder={t('blog.searchCategory')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-gray-900 border-gray-700 h-12"
@@ -124,7 +130,7 @@ export default function BlogPage() {
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
                     <Star className="w-6 h-6 text-yellow-500" />
-                    Favoriler
+                    {t('blog.favorites')}
                   </h3>
                   <div className="space-y-4">
                     {favoriteCategories.map((category) => (
@@ -133,6 +139,7 @@ export default function BlogPage() {
                         category={category}
                         isFavorite={true}
                         onToggleFavorite={toggleFavorite}
+                        t={t}
                       />
                     ))}
                   </div>
@@ -141,7 +148,7 @@ export default function BlogPage() {
 
               {/* All Categories */}
               <div>
-                <h3 className="text-2xl font-bold mb-4">Tüm Kategoriler</h3>
+                <h3 className="text-2xl font-bold mb-4">{t('blog.allCategories')}</h3>
                 <div className="space-y-4">
                   {otherCategories.map((category) => (
                     <CategoryCard
@@ -149,6 +156,7 @@ export default function BlogPage() {
                       category={category}
                       isFavorite={false}
                       onToggleFavorite={toggleFavorite}
+                      t={t}
                     />
                   ))}
                 </div>
@@ -156,7 +164,7 @@ export default function BlogPage() {
 
               {filteredCategories.length === 0 && (
                 <div className="text-center py-12">
-                  <p className="text-gray-400">Kategori bulunamadı</p>
+                  <p className="text-gray-400">{t('blog.noCategories')}</p>
                 </div>
               )}
             </>
@@ -167,7 +175,7 @@ export default function BlogPage() {
   )
 }
 
-function CategoryCard({ category, isFavorite, onToggleFavorite }) {
+function CategoryCard({ category, isFavorite, onToggleFavorite, t }) {
   return (
     <Link href={`/blog/${category.slug}`}>
       <Card
@@ -191,11 +199,11 @@ function CategoryCard({ category, isFavorite, onToggleFavorite }) {
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
-                  {category.topicCount || 0} Konu
+                  {category.topicCount || 0} {t('blog.topics')}
                 </span>
                 <span className="flex items-center gap-1">
                   <MessageSquare className="w-4 h-4" />
-                  {category.postCount || 0} Mesaj
+                  {category.postCount || 0} {t('blog.posts')}
                 </span>
               </div>
             </div>
