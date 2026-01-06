@@ -199,12 +199,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "POST /api/blog/categories - Create new category"
-    - "DELETE /api/blog/categories - Delete category"
-    - "GET /api/blog/posts - Get all posts or filter by category"
-    - "POST /api/blog/posts - Create new post"
-    - "DELETE /api/blog/posts - Delete post"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
