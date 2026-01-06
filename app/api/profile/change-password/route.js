@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '../../../../lib/supabase-server.js'
-import { supabaseAdmin } from '../../../../lib/supabase.js'
+import { createServerSupabaseClient, supabaseAdmin } from '../../../../lib/supabase.js'
 
 // POST /api/profile/change-password - Change user password
 export async function POST(request) {
