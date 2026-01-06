@@ -17,35 +17,48 @@ export async function GET(request) {
     // Filter by categoryId if provided
     if (categoryId) {
       query = query.eq('categoryId', categoryId)
+      console.log('Filtering by categoryId:', categoryId)
     } 
     // If categorySlug is provided, first get the category ID
     else if (categorySlug) {
+      console.log('Looking up category by slug:', categorySlug)
       const { data: category, error: catError } = await supabaseAdmin
         .from('blog_categories')
-        .select('id')
+        .select('id, slug')
         .eq('slug', categorySlug)
         .single()
+      
+      console.log('Category lookup result:', { category, catError })
       
       if (catError || !category) {
         console.error('Category lookup error:', catError)
         return NextResponse.json({ error: 'Category not found', details: catError?.message }, { status: 404 })
       }
       
+      console.log('Filtering posts by categoryId:', category.id)
       query = query.eq('categoryId', category.id)
     }
     
-    // Order by isPinned first, then by createdAt if it exists
-    try {
-      query = query.order('isPinned', { ascending: false })
-      query = query.order('createdAt', { ascending: false })
-    } catch (e) {
-      // If ordering fails, just continue without ordering
-      console.warn('Ordering may have failed:', e)
-    }
+    // Order posts - try isPinned first, then createdAt, fallback to id
+    // Supabase will ignore order() calls for non-existent columns
+    query = query.order('isPinned', { ascending: false })
+    query = query.order('createdAt', { ascending: false })
+    // Fallback ordering by id if other columns don't exist
+    query = query.order('id', { ascending: false })
     
     const { data, error } = await query
     
-    console.log('Posts query result:', { data: data?.length, error, categorySlug, categoryId })
+    console.log('Posts query result:', { 
+      postCount: data?.length || 0, 
+      error: error?.message, 
+      categorySlug, 
+      categoryId,
+      samplePost: data?.[0] ? {
+        id: data[0].id,
+        title: data[0].title,
+        categoryId: data[0].categoryId
+      } : null
+    })
     
     if (error) {
       console.error('Error fetching posts:', error)
@@ -70,30 +83,45 @@ export async function POST(request) {
     const postId = `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const slug = body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
     
+    // Prepare post data - only include basic required fields
+    const postData = {
+      id: postId,
+      categoryId: body.categoryId,
+      userId: body.userId,
+      title: body.title,
+      slug,
+      content: body.content
+    }
+    
+    // Add optional fields if provided
+    if (body.excerpt) {
+      postData.excerpt = body.excerpt
+    } else if (body.content) {
+      postData.excerpt = body.content.substring(0, 200)
+    }
+    
+    if (body.tags && Array.isArray(body.tags) && body.tags.length > 0) {
+      postData.tags = body.tags
+    }
+    
+    console.log('Creating post with data:', postData)
+    
+    // Insert post - select only basic fields to avoid column errors
     const { data, error } = await supabaseAdmin
       .from('blog_posts')
-      .insert([{
-        id: postId,
-        categoryId: body.categoryId,
-        userId: body.userId,
-        title: body.title,
-        slug,
-        content: body.content,
-        excerpt: body.excerpt || body.content.substring(0, 200),
-        tags: body.tags || [],
-        status: 'published',
-        isPinned: body.isPinned || false,
-        isLocked: body.isLocked || false,
-        viewCount: 0,
-        replyCount: 0
-        // createdAt and updatedAt will be set by database defaults if columns exist
-      }])
-      .select()
+      .insert([postData])
+      .select('id, categoryId, userId, title, slug, content, excerpt, tags')
       .single()
     
     if (error) {
       console.error('Error creating post:', error)
-      return NextResponse.json({ error: 'Failed to create post' }, { status: 500 })
+      console.error('Post data:', postData)
+      return NextResponse.json({ 
+        error: 'Failed to create post',
+        details: error.message,
+        hint: error.hint || null,
+        code: error.code || null
+      }, { status: 500 })
     }
     
     return NextResponse.json(data, { status: 201 })
