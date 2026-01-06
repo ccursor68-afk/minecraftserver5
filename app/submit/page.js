@@ -19,12 +19,15 @@ import {
 } from '@/components/ui/select'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 const CATEGORIES = ['Survival', 'Skyblock', 'PvP', 'Creative', 'Roleplay', 'Network', 'Minigames', 'Other']
 const VERSIONS = ['1.21', '1.20.1', '1.19.4', '1.18.2', '1.17.1', '1.16.5', '1.12.2', '1.8.9']
 
 export default function SubmitServerPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [user, setUser] = useState(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [currentStep, setCurrentStep] = useState(1)
@@ -34,23 +37,16 @@ export default function SubmitServerPage() {
   
   // Form data
   const [formData, setFormData] = useState({
-    // Step 1: Basic Info
     name: '',
     ip: '',
     port: '25565',
     version: '1.21',
     website: '',
     discord: '',
-    
-    // Step 2: Media
     bannerUrl: '',
-    
-    // Step 3: Content
     category: 'Survival',
     shortDescription: '',
     longDescription: '',
-    
-    // Step 4: Votifier (Optional)
     votifierIp: '',
     votifierPort: '8192',
     votifierPublicKey: ''
@@ -66,7 +62,7 @@ export default function SubmitServerPage() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
-        toast.error('You must be logged in to submit a server')
+        toast.error(t('submit.loginRequiredDesc'))
         router.push('/auth/login')
         return
       }
@@ -84,10 +80,9 @@ export default function SubmitServerPage() {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
   
-  // Validate server IP using mcstatus.io
   const validateServerIp = async () => {
     if (!formData.ip) {
-      toast.error('Please enter a server IP')
+      toast.error(t('submit.ipRequired'))
       return
     }
     
@@ -101,68 +96,66 @@ export default function SubmitServerPage() {
       if (data.online) {
         setIpValidation({
           valid: true,
-          message: `Server is online! ${data.players?.online || 0} players online`,
+          message: `${t('submit.serverOnline')} ${data.players?.online || 0} players online`,
           data: data
         })
-        toast.success('Server validated successfully!')
+        toast.success(t('submit.serverOnline'))
       } else {
         setIpValidation({
           valid: false,
-          message: 'Server is offline or unreachable',
+          message: t('submit.serverOffline'),
           data: null
         })
-        toast.warning('Server appears to be offline')
+        toast.warning(t('submit.serverOffline'))
       }
     } catch (error) {
       setIpValidation({
         valid: false,
-        message: 'Failed to validate server. Please check the IP and port.',
+        message: t('submit.validateFailed'),
         data: null
       })
-      toast.error('Failed to validate server')
+      toast.error(t('submit.validateFailed'))
     } finally {
       setValidatingIp(false)
     }
   }
   
-  // Validate current step
   const validateStep = (step) => {
     switch (step) {
       case 1:
         if (!formData.name.trim()) {
-          toast.error('Server name is required')
+          toast.error(t('submit.nameRequired'))
           return false
         }
         if (!formData.ip.trim()) {
-          toast.error('Server IP is required')
+          toast.error(t('submit.ipRequired'))
           return false
         }
         if (!formData.port || formData.port < 1 || formData.port > 65535) {
-          toast.error('Invalid port number')
+          toast.error(t('submit.invalidPort'))
           return false
         }
         return true
       
       case 2:
         if (!formData.bannerUrl.trim()) {
-          toast.error('Banner URL is required')
+          toast.error(t('submit.bannerRequired'))
           return false
         }
         return true
       
       case 3:
         if (!formData.shortDescription.trim()) {
-          toast.error('Short description is required')
+          toast.error(t('submit.shortDescRequired'))
           return false
         }
         if (!formData.longDescription.trim()) {
-          toast.error('Long description is required')
+          toast.error(t('submit.longDescRequired'))
           return false
         }
         return true
       
       case 4:
-        // Votifier is optional
         return true
       
       default:
@@ -192,23 +185,23 @@ export default function SubmitServerPage() {
           ...formData,
           port: parseInt(formData.port),
           votifierPort: formData.votifierPort ? parseInt(formData.votifierPort) : null,
-          ownerId: user?.id // Add user ID
+          ownerId: user?.id
         })
       })
       
       const data = await response.json()
       
       if (response.ok) {
-        toast.success('Server submitted successfully! 🎉')
+        toast.success(t('submit.submitSuccess'))
         setTimeout(() => {
           router.push('/')
         }, 1500)
       } else {
-        toast.error(data.error || 'Failed to submit server')
+        toast.error(data.error || t('submit.submitFailed'))
       }
     } catch (error) {
       console.error('Submit error:', error)
-      toast.error('Failed to submit server: ' + (error.message || 'Unknown error'))
+      toast.error(t('submit.submitFailed') + ': ' + (error.message || 'Unknown error'))
     } finally {
       setLoading(false)
     }
@@ -220,7 +213,7 @@ export default function SubmitServerPage() {
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="name">Server Name *</Label>
+              <Label htmlFor="name">{t('submit.serverName')}</Label>
               <Input
                 id="name"
                 placeholder="My Awesome Server"
@@ -232,7 +225,7 @@ export default function SubmitServerPage() {
             
             <div className="grid grid-cols-3 gap-4">
               <div className="col-span-2">
-                <Label htmlFor="ip">Server IP Address *</Label>
+                <Label htmlFor="ip">{t('submit.serverIP')}</Label>
                 <Input
                   id="ip"
                   placeholder="play.example.com"
@@ -242,7 +235,7 @@ export default function SubmitServerPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="port">Port *</Label>
+                <Label htmlFor="port">{t('submit.port')}</Label>
                 <Input
                   id="port"
                   type="number"
@@ -264,12 +257,12 @@ export default function SubmitServerPage() {
                 {validatingIp ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Validating...
+                    {t('submit.validating')}
                   </>
                 ) : (
                   <>
                     <Check className="w-4 h-4 mr-2" />
-                    Validate Server IP
+                    {t('submit.validateIP')}
                   </>
                 )}
               </Button>
@@ -286,7 +279,7 @@ export default function SubmitServerPage() {
             </div>
             
             <div>
-              <Label htmlFor="version">Minecraft Version *</Label>
+              <Label htmlFor="version">{t('submit.mcVersion')}</Label>
               <Select value={formData.version} onValueChange={(val) => updateFormData('version', val)}>
                 <SelectTrigger className="bg-gray-900 border-gray-700">
                   <SelectValue />
@@ -300,7 +293,7 @@ export default function SubmitServerPage() {
             </div>
             
             <div>
-              <Label htmlFor="website">Website (Optional)</Label>
+              <Label htmlFor="website">{t('submit.website')}</Label>
               <Input
                 id="website"
                 placeholder="https://example.com"
@@ -311,7 +304,7 @@ export default function SubmitServerPage() {
             </div>
             
             <div>
-              <Label htmlFor="discord">Discord Invite (Optional)</Label>
+              <Label htmlFor="discord">{t('submit.discord')}</Label>
               <Input
                 id="discord"
                 placeholder="https://discord.gg/example"
@@ -327,7 +320,7 @@ export default function SubmitServerPage() {
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="bannerUrl">Banner Image URL *</Label>
+              <Label htmlFor="bannerUrl">{t('submit.bannerUrl')}</Label>
               <Input
                 id="bannerUrl"
                 placeholder="https://example.com/banner.png"
@@ -336,13 +329,13 @@ export default function SubmitServerPage() {
                 className="bg-gray-900 border-gray-700"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Recommended size: 468x60px (PNG or JPG)
+                {t('submit.bannerSize')}
               </p>
             </div>
             
             {formData.bannerUrl && (
               <div className="mt-4">
-                <Label>Preview:</Label>
+                <Label>{t('submit.preview')}</Label>
                 <div className="mt-2 border border-gray-700 rounded-lg overflow-hidden">
                   <img
                     src={formData.bannerUrl}
@@ -350,7 +343,7 @@ export default function SubmitServerPage() {
                     className="w-full h-auto"
                     onError={(e) => {
                       e.target.style.display = 'none'
-                      toast.error('Failed to load banner image')
+                      toast.error(t('submit.bannerFailed'))
                     }}
                   />
                 </div>
@@ -361,12 +354,12 @@ export default function SubmitServerPage() {
               <div className="flex gap-2">
                 <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-blue-300">
-                  <p className="font-medium mb-1">Tips for great banners:</p>
+                  <p className="font-medium mb-1">{t('submit.bannerTips')}</p>
                   <ul className="list-disc list-inside space-y-1 text-xs">
-                    <li>Use high contrast colors</li>
-                    <li>Include your server name</li>
-                    <li>Avoid too much text</li>
-                    <li>Make it eye-catching!</li>
+                    <li>{t('submit.tip1')}</li>
+                    <li>{t('submit.tip2')}</li>
+                    <li>{t('submit.tip3')}</li>
+                    <li>{t('submit.tip4')}</li>
                   </ul>
                 </div>
               </div>
@@ -378,7 +371,7 @@ export default function SubmitServerPage() {
         return (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category">{t('submit.category')}</Label>
               <Select value={formData.category} onValueChange={(val) => updateFormData('category', val)}>
                 <SelectTrigger className="bg-gray-900 border-gray-700">
                   <SelectValue />
@@ -392,32 +385,32 @@ export default function SubmitServerPage() {
             </div>
             
             <div>
-              <Label htmlFor="shortDescription">Short Description * (Max 100 characters)</Label>
+              <Label htmlFor="shortDescription">{t('submit.shortDesc')}</Label>
               <Input
                 id="shortDescription"
-                placeholder="A brief description of your server"
+                placeholder={t('submit.shortDescPlaceholder')}
                 maxLength={100}
                 value={formData.shortDescription}
                 onChange={(e) => updateFormData('shortDescription', e.target.value)}
                 className="bg-gray-900 border-gray-700"
               />
               <p className="text-xs text-gray-400 mt-1">
-                {formData.shortDescription.length}/100 characters
+                {formData.shortDescription.length}/100 {t('submit.characters')}
               </p>
             </div>
             
             <div>
-              <Label htmlFor="longDescription">Long Description * (Markdown supported)</Label>
+              <Label htmlFor="longDescription">{t('submit.longDesc')}</Label>
               <Textarea
                 id="longDescription"
-                placeholder="# Welcome to our server!&#10;&#10;## Features&#10;- Feature 1&#10;- Feature 2&#10;&#10;Join us today!"
+                placeholder={t('submit.longDescPlaceholder')}
                 rows={12}
                 value={formData.longDescription}
                 onChange={(e) => updateFormData('longDescription', e.target.value)}
                 className="bg-gray-900 border-gray-700 font-mono text-sm"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Use Markdown for formatting (headings, lists, bold, etc.)
+                {t('submit.markdownHelp')}
               </p>
             </div>
           </div>
@@ -430,10 +423,9 @@ export default function SubmitServerPage() {
               <div className="flex gap-2">
                 <AlertCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm text-green-300">
-                  <p className="font-medium mb-1">Votifier Settings (Optional)</p>
+                  <p className="font-medium mb-1">{t('submit.votifierSettings')}</p>
                   <p className="text-xs">
-                    Configure Votifier to reward players who vote for your server. 
-                    This section is optional but highly recommended!
+                    {t('submit.votifierDesc2')}
                   </p>
                 </div>
               </div>
@@ -441,7 +433,7 @@ export default function SubmitServerPage() {
             
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="votifierIp">Votifier IP</Label>
+                <Label htmlFor="votifierIp">{t('submit.votifierIP')}</Label>
                 <Input
                   id="votifierIp"
                   placeholder="Same as server IP"
@@ -451,7 +443,7 @@ export default function SubmitServerPage() {
                 />
               </div>
               <div>
-                <Label htmlFor="votifierPort">Votifier Port</Label>
+                <Label htmlFor="votifierPort">{t('submit.votifierPort')}</Label>
                 <Input
                   id="votifierPort"
                   type="number"
@@ -464,7 +456,7 @@ export default function SubmitServerPage() {
             </div>
             
             <div>
-              <Label htmlFor="votifierPublicKey">Votifier Public Key</Label>
+              <Label htmlFor="votifierPublicKey">{t('submit.votifierKey')}</Label>
               <Textarea
                 id="votifierPublicKey"
                 placeholder="Paste your Votifier public key here"
@@ -474,17 +466,17 @@ export default function SubmitServerPage() {
                 className="bg-gray-900 border-gray-700 font-mono text-xs"
               />
               <p className="text-xs text-gray-400 mt-1">
-                Find this in your server's Votifier config file
+                {t('submit.votifierKeyHelp')}
               </p>
             </div>
             
             <div className="bg-gray-900 border border-gray-700 rounded-lg p-4">
-              <h4 className="font-medium mb-2 text-sm">How to set up Votifier:</h4>
+              <h4 className="font-medium mb-2 text-sm">{t('submit.howToSetup')}</h4>
               <ol className="list-decimal list-inside space-y-1 text-xs text-gray-400">
-                <li>Install Votifier plugin on your server</li>
-                <li>Restart your server to generate keys</li>
-                <li>Open config.yml and copy the public key</li>
-                <li>Paste the key above</li>
+                <li>{t('submit.setup1')}</li>
+                <li>{t('submit.setup2')}</li>
+                <li>{t('submit.setup3')}</li>
+                <li>{t('submit.setup4')}</li>
               </ol>
             </div>
           </div>
@@ -496,43 +488,41 @@ export default function SubmitServerPage() {
   }
   
   const steps = [
-    { number: 1, title: 'Basic Info' },
-    { number: 2, title: 'Media' },
-    { number: 3, title: 'Content' },
-    { number: 4, title: 'Votifier' }
+    { number: 1, title: t('submit.basicInfo') },
+    { number: 2, title: t('submit.media') },
+    { number: 3, title: t('submit.content') },
+    { number: 4, title: t('submit.votifier') }
   ]
   
-  // Show loading while checking auth
   if (checkingAuth) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-green-500 mx-auto mb-4" />
-          <p className="text-gray-400">Checking authentication...</p>
+          <p className="text-gray-400">{t('submit.checkingAuth')}</p>
         </div>
       </div>
     )
   }
   
-  // Show login prompt if not authenticated
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
         <Card className="bg-[#0f0f0f] border-gray-800 p-8 max-w-md text-center">
           <div className="mb-6">
             <LogIn className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold mb-2">Login Required</h2>
-            <p className="text-gray-400">You must be logged in to submit a server</p>
+            <h2 className="text-2xl font-bold mb-2">{t('submit.loginRequired')}</h2>
+            <p className="text-gray-400">{t('submit.loginRequiredDesc')}</p>
           </div>
           <div className="flex gap-3">
             <Link href="/auth/login" className="flex-1">
               <Button className="w-full bg-green-600 hover:bg-green-700">
-                Login
+                {t('auth.login')}
               </Button>
             </Link>
             <Link href="/auth/register" className="flex-1">
               <Button variant="outline" className="w-full border-gray-700">
-                Sign Up
+                {t('auth.signUp')}
               </Button>
             </Link>
           </div>
@@ -546,13 +536,16 @@ export default function SubmitServerPage() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-[#0a0a0a]/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <ArrowLeft className="w-5 h-5 text-green-500" />
-            <Gamepad2 className="w-8 h-8 text-green-500" />
-            <div>
-              <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
-            </div>
-          </Link>
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <ArrowLeft className="w-5 h-5 text-green-500" />
+              <Gamepad2 className="w-8 h-8 text-green-500" />
+              <div>
+                <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
+              </div>
+            </Link>
+            <LanguageSwitcher />
+          </div>
         </div>
       </header>
       
@@ -560,8 +553,8 @@ export default function SubmitServerPage() {
         <div className="max-w-3xl mx-auto">
           {/* Page Title */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-2">Submit Your Server</h1>
-            <p className="text-gray-400">Get your Minecraft server listed and start receiving votes!</p>
+            <h1 className="text-4xl font-bold mb-2">{t('submit.title')}</h1>
+            <p className="text-gray-400">{t('submit.subtitle')}</p>
           </div>
           
           {/* Progress Steps */}
@@ -605,10 +598,10 @@ export default function SubmitServerPage() {
                 {steps[currentStep - 1].title}
               </h2>
               <p className="text-gray-400 text-sm">
-                {currentStep === 1 && 'Enter your server\'s basic information'}
-                {currentStep === 2 && 'Add a banner image to make your server stand out'}
-                {currentStep === 3 && 'Describe your server and choose a category'}
-                {currentStep === 4 && 'Configure vote rewards (optional but recommended)'}
+                {currentStep === 1 && t('submit.basicInfoDesc')}
+                {currentStep === 2 && t('submit.mediaDesc')}
+                {currentStep === 3 && t('submit.contentDesc')}
+                {currentStep === 4 && t('submit.votifierDesc')}
               </p>
             </div>
             
@@ -623,7 +616,7 @@ export default function SubmitServerPage() {
                   className="flex-1 border-gray-700"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Previous
+                  {t('submit.previous')}
                 </Button>
               )}
               
@@ -632,7 +625,7 @@ export default function SubmitServerPage() {
                   onClick={nextStep}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                 >
-                  Next
+                  {t('submit.next')}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
@@ -644,12 +637,12 @@ export default function SubmitServerPage() {
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Submitting...
+                      {t('submit.submitting')}
                     </>
                   ) : (
                     <>
                       <Check className="w-4 h-4 mr-2" />
-                      Submit Server
+                      {t('submit.submitServer')}
                     </>
                   )}
                 </Button>
@@ -660,7 +653,7 @@ export default function SubmitServerPage() {
           {/* Info Box */}
           <div className="mt-6 bg-gray-900 border border-gray-800 rounded-lg p-4">
             <p className="text-sm text-gray-400 text-center">
-              <strong className="text-green-500">Note:</strong> Your server will be reviewed and listed shortly after submission.
+              <strong className="text-green-500">Note:</strong> {t('submit.submitNote')}
             </p>
           </div>
         </div>
