@@ -10,9 +10,12 @@ import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function LoginPage() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
@@ -33,12 +36,12 @@ export default function LoginPage() {
       if (error) {
         toast.error(error.message)
       } else {
-        toast.success('Welcome back!')
+        toast.success(t('auth.loginSuccess'))
         // Force full page reload to refresh auth state
         window.location.href = '/'
       }
     } catch (error) {
-      toast.error('Login failed')
+      toast.error(t('auth.loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -46,25 +49,28 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center px-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 mb-4">
             <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            {t('auth.backToHome')}
           </Link>
           <div className="flex justify-center mb-4">
             <Gamepad2 className="w-12 h-12 text-green-500" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
-          <p className="text-gray-400">Login to your account</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t('auth.welcomeBack')}</h1>
+          <p className="text-gray-400">{t('auth.loginToAccount')}</p>
         </div>
 
         {/* Login Form */}
         <Card className="bg-[#0f0f0f] border-gray-800 p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="email">Email Address</Label>
+              <Label htmlFor="email">{t('auth.emailAddress')}</Label>
               <div className="relative mt-2">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -80,7 +86,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t('auth.password')}</Label>
               <div className="relative mt-2">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
@@ -103,19 +109,19 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Logging in...
+                  {t('auth.loggingIn')}
                 </>
               ) : (
-                'Login'
+                t('auth.login')
               )}
             </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
             <p className="text-gray-400">
-              Don't have an account?{' '}
+              {t('auth.noAccount')}{' '}
               <Link href="/auth/register" className="text-green-500 hover:text-green-400 font-medium">
-                Sign up
+                {t('auth.signUp')}
               </Link>
             </p>
           </div>
