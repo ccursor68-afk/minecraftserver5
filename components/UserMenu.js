@@ -15,20 +15,6 @@ export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef(null)
   
-  useEffect(() => {
-    checkUser()
-    
-    // Close dropdown when clicking outside
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
-      }
-    }
-    
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-  
   const checkUser = async () => {
     try {
       const supabase = createBrowserSupabaseClient()
@@ -47,6 +33,20 @@ export default function UserMenu() {
       console.error('Error:', error)
     }
   }
+  
+  useEffect(() => {
+    checkUser()
+    
+    // Close dropdown when clicking outside
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
   
   const handleLogout = async () => {
     try {
