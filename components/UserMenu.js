@@ -83,8 +83,8 @@ export default function UserMenu() {
   }
   
   const avatarUrl = profile?.minecraftUsername 
-    ? `https://crafatar.com/avatars/${profile.minecraftUsername}?size=32&overlay`
-    : 'https://crafatar.com/avatars/steve?size=32&overlay'
+    ? `https://crafatar.com/avatars/${profile.minecraftUsername}?size=32&overlay&default=MHF_Steve`
+    : 'https://crafatar.com/avatars/MHF_Steve?size=32'
   
   return (
     <div className="relative" ref={dropdownRef}>
