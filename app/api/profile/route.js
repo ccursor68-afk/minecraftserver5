@@ -77,7 +77,7 @@ export async function PATCH(request) {
       updates.minecraftUsername = body.minecraftUsername
       // Update avatar URL
       if (body.minecraftUsername) {
-        updates.avatarUrl = `https://crafatar.com/avatars/${body.minecraftUsername}?size=128&overlay`
+        updates.avatarUrl = `https://mc-heads.net/avatar/${body.minecraftUsername}/128`
       } else {
         updates.avatarUrl = null
       }
