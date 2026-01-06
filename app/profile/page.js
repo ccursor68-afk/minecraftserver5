@@ -268,7 +268,7 @@ export default function ProfilePage() {
                         <div className="flex-1">
                           <h4 className="font-bold">🎮 {server.name}</h4>
                           <div className="flex items-center gap-3 text-sm text-gray-400 mt-1">
-                            <span>Durum: {server.status === 'approved' ? '✅ Aktif' : '⏳ Onay Bekliyor'}</span>
+                            <span>Durum: {server.status === 'approved' ? '✅ Onaylandı' : server.status === 'pending' ? '⏳ Onay Bekliyor' : '❌ Reddedildi'}</span>
                             <span>•</span>
                             <span>Oy: {server.voteCount || 0}</span>
                           </div>
