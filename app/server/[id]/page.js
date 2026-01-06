@@ -29,6 +29,9 @@ export default function ServerDetailPage() {
   const [canVote, setCanVote] = useState(true)
   const [voteTimeLeft, setVoteTimeLeft] = useState(0)
   const [voteDialogOpen, setVoteDialogOpen] = useState(false)
+  const [minecraftUsername, setMinecraftUsername] = useState('')
+  const [agreePrivacy, setAgreePrivacy] = useState(false)
+  const [topVoters, setTopVoters] = useState([])
   
   useEffect(() => {
     if (serverId) {
