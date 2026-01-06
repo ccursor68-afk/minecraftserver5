@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '../../../../lib/supabase.js'
-import { createServerSupabaseClient } from '../../../../lib/supabase-server.js'
+import { supabaseAdmin, createServerSupabaseClient } from '../../../../lib/supabase.js'
 
 // GET /api/profile/activity - Get user activity history
 export async function GET(request) {
