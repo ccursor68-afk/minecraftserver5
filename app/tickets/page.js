@@ -9,9 +9,12 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
+import { useLanguage } from '@/contexts/LanguageContext'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 
 export default function MyTicketsPage() {
   const router = useRouter()
+  const { t, locale } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [tickets, setTickets] = useState([])
   const [filter, setFilter] = useState('all')
@@ -44,11 +47,11 @@ export default function MyTicketsPage() {
         const data = await response.json()
         setTickets(data)
       } else {
-        toast.error('Talepler yüklenirken hata oluştu')
+        toast.error(t('tickets.loadError'))
       }
     } catch (error) {
       console.error('Error:', error)
-      toast.error('Bir hata oluştu')
+      toast.error(t('common.errorOccurred'))
     } finally {
       setLoading(false)
     }
@@ -57,11 +60,11 @@ export default function MyTicketsPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'open':
-        return <Badge className="bg-green-600">🟢 Açık</Badge>
+        return <Badge className="bg-green-600">🟢 {t('tickets.open')}</Badge>
       case 'in_progress':
-        return <Badge className="bg-blue-600">🔵 İnceleniyor</Badge>
+        return <Badge className="bg-blue-600">🔵 {t('tickets.inProgress')}</Badge>
       case 'closed':
-        return <Badge className="bg-gray-600">⚪ Kapalı</Badge>
+        return <Badge className="bg-gray-600">⚪ {t('tickets.closed')}</Badge>
       default:
         return <Badge className="bg-gray-600">{status}</Badge>
     }
@@ -77,7 +80,7 @@ export default function MyTicketsPage() {
       <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-700 border-t-green-500"></div>
-          <p className="mt-4 text-gray-400">Yükléniyor...</p>
+          <p className="mt-4 text-gray-400">{t('common.loading')}</p>
         </div>
       </div>
     )
@@ -85,21 +88,24 @@ export default function MyTicketsPage() {
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#0f0f0f] to-[#0a0a0a] py-12">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <div className="container mx-auto px-4 max-w-5xl">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
             <Link href="/profile">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Geri
+                {t('common.back')}
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold">Destek Taleplerim</h1>
+            <h1 className="text-3xl font-bold">{t('tickets.title')}</h1>
           </div>
-          <Link href="/admin/tickets/create">
+          <Link href="/tickets/create">
             <Button className="bg-green-600 hover:bg-green-700">
               <Plus className="w-4 h-4 mr-2" />
-              Yeni Talep
+              {t('tickets.newTicket')}
             </Button>
           </Link>
         </div>
@@ -111,28 +117,28 @@ export default function MyTicketsPage() {
             onClick={() => setFilter('all')}
             className={filter === 'all' ? 'bg-green-600' : 'border-gray-700'}
           >
-            Tümü ({tickets.length})
+            {t('tickets.all')} ({tickets.length})
           </Button>
           <Button
             variant={filter === 'open' ? 'default' : 'outline'}
             onClick={() => setFilter('open')}
             className={filter === 'open' ? 'bg-green-600' : 'border-gray-700'}
           >
-            Açık ({tickets.filter(t => t.status === 'open').length})
+            {t('tickets.open')} ({tickets.filter(t => t.status === 'open').length})
           </Button>
           <Button
             variant={filter === 'in_progress' ? 'default' : 'outline'}
             onClick={() => setFilter('in_progress')}
             className={filter === 'in_progress' ? 'bg-blue-600' : 'border-gray-700'}
           >
-            İnceleniyor ({tickets.filter(t => t.status === 'in_progress').length})
+            {t('tickets.inProgress')} ({tickets.filter(t => t.status === 'in_progress').length})
           </Button>
           <Button
             variant={filter === 'closed' ? 'default' : 'outline'}
             onClick={() => setFilter('closed')}
             className={filter === 'closed' ? 'bg-gray-600' : 'border-gray-700'}
           >
-            Kapalı ({tickets.filter(t => t.status === 'closed').length})
+            {t('tickets.closed')} ({tickets.filter(t => t.status === 'closed').length})
           </Button>
         </div>
         
@@ -141,12 +147,12 @@ export default function MyTicketsPage() {
           <Card className="bg-[#0f0f0f] border-gray-800 p-12 text-center">
             <Ticket className="w-16 h-16 text-gray-600 mx-auto mb-4" />
             <p className="text-gray-400 mb-4">
-              {filter === 'all' ? 'Henüz destek talebi oluşturmadınız' : `${filter} durumunda talep yok`}
+              {filter === 'all' ? t('tickets.noTickets') : `${t('tickets.noTicketsFilter')} ${filter}`}
             </p>
-            <Link href="/admin/tickets/create">
+            <Link href="/tickets/create">
               <Button className="bg-green-600 hover:bg-green-700">
                 <Plus className="w-4 h-4 mr-2" />
-                İlk Talep Oluştur
+                {t('tickets.createFirst')}
               </Button>
             </Link>
           </Card>
@@ -165,7 +171,7 @@ export default function MyTicketsPage() {
                     <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
                       <span className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
-                        Oluşturma: {new Date(ticket.createdAt).toLocaleDateString('tr-TR', {
+                        {t('tickets.created')} {new Date(ticket.createdAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
@@ -176,7 +182,7 @@ export default function MyTicketsPage() {
                       {ticket.updatedAt && (
                         <span className="flex items-center gap-1">
                           <MessageSquare className="w-4 h-4" />
-                          Son güncelleme: {new Date(ticket.updatedAt).toLocaleDateString('tr-TR')}
+                          {t('tickets.lastUpdate')} {new Date(ticket.updatedAt).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US')}
                         </span>
                       )}
                     </div>
@@ -185,15 +191,15 @@ export default function MyTicketsPage() {
                   </div>
                   
                   <div className="flex flex-col gap-2">
-                    <Link href={`/admin/tickets/${ticket.id}`}>
+                    <Link href={`/tickets/${ticket.id}`}>
                       <Button size="sm" variant="outline" className="border-gray-700">
-                        Görüntüle
+                        {t('tickets.view')}
                       </Button>
                     </Link>
                     {ticket.status !== 'closed' && (
-                      <Link href={`/admin/tickets/${ticket.id}#reply`}>
+                      <Link href={`/tickets/${ticket.id}#reply`}>
                         <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                          Yanıtla
+                          {t('tickets.reply')}
                         </Button>
                       </Link>
                     )}
