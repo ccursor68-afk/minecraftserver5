@@ -71,6 +71,18 @@ export default function ServerDetailPage() {
     }
   }
   
+  const fetchTopVoters = async () => {
+    try {
+      const response = await fetch(`/api/servers/${serverId}/top-voters`)
+      if (response.ok) {
+        const data = await response.json()
+        setTopVoters(data)
+      }
+    } catch (error) {
+      console.error('Fetch top voters error:', error)
+    }
+  }
+  
   const copyToClipboard = () => {
     if (server) {
       const ipAddress = server.port === 25565 ? server.ip : `${server.ip}:${server.port}`
