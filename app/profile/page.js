@@ -186,7 +186,7 @@ export default function ProfilePage() {
                   alt="Avatar"
                   className="w-32 h-32 mx-auto rounded-lg border-4 border-green-500 mb-4"
                   onError={(e) => {
-                    e.target.src = 'https://crafatar.com/avatars/steve?size=128&overlay'
+                    e.target.src = 'https://mc-heads.net/avatar/MHF_Steve/128'
                   }}
                 />
                 <h2 className="text-2xl font-bold">{profile?.username}</h2>
