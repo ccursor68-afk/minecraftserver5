@@ -91,6 +91,8 @@ export default function ProfilePage() {
       return
     }
     
+    console.log('Updating Minecraft username:', minecraftUsername)
+    
     setSaving(true)
     try {
       const response = await fetch('/api/profile', {
@@ -99,12 +101,16 @@ export default function ProfilePage() {
         body: JSON.stringify({ minecraftUsername })
       })
       
+      const data = await response.json()
+      console.log('Update response:', data)
+      
       if (response.ok) {
         toast.success('Minecraft kullanıcı adı güncellendi!')
-        fetchProfile()
+        await fetchProfile()
+        // Force refresh to update avatar
+        window.location.reload()
       } else {
-        const error = await response.json()
-        toast.error(error.error || 'Güncellenemedi')
+        toast.error(data.error || 'Güncellenemedi')
       }
     } catch (error) {
       console.error('Error:', error)
