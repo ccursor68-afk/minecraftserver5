@@ -123,12 +123,23 @@ export default function AdminBlogPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {categories.map((cat) => (
                 <Card key={cat.id} className="bg-gray-900 border-gray-800 p-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{cat.icon}</span>
-                    <div>
-                      <h3 className="font-bold">{cat.name}</h3>
-                      <p className="text-sm text-gray-400">{cat.description}</p>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1">
+                      <span className="text-2xl">{cat.icon}</span>
+                      <div className="flex-1">
+                        <h3 className="font-bold">{cat.name}</h3>
+                        <p className="text-sm text-gray-400">{cat.description}</p>
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteCategory(cat.id, cat.name)}
+                      disabled={deleting === `cat-${cat.id}`}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-950"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </Card>
               ))}
@@ -140,8 +151,21 @@ export default function AdminBlogPage() {
             <div className="space-y-4">
               {posts.map((post) => (
                 <Card key={post.id} className="bg-gray-900 border-gray-800 p-4">
-                  <h3 className="font-bold mb-1">{post.title}</h3>
-                  <p className="text-sm text-gray-400">{post.excerpt}</p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="font-bold mb-1">{post.title}</h3>
+                      <p className="text-sm text-gray-400">{post.excerpt}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deletePost(post.id, post.title)}
+                      disabled={deleting === `post-${post.id}`}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-950"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </Card>
               ))}
             </div>
