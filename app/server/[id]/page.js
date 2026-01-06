@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect } from 'react'
+import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { Gamepad2, Copy, Check, Users, Wifi, Globe, MessageCircle, ArrowLeft, ExternalLink, RefreshCw } from 'lucide-react'
@@ -17,9 +18,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 
-export default function ServerDetailPage({ params }) {
-  const resolvedParams = use(params)
-  const serverId = resolvedParams.id
+export default function ServerDetailPage() {
+  const params = useParams()
+  const serverId = params?.id
   const [server, setServer] = useState(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
