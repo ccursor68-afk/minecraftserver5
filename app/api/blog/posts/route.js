@@ -139,3 +139,47 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const postId = searchParams.get('id')
+    
+    if (!postId) {
+      return NextResponse.json({ error: 'Post ID is required' }, { status: 400 })
+    }
+    
+    // First, delete all replies to this post
+    const { error: repliesError } = await supabaseAdmin
+      .from('blog_replies')
+      .delete()
+      .eq('postId', postId)
+    
+    if (repliesError) {
+      console.error('Error deleting post replies:', repliesError)
+      // Continue anyway, the post might not have replies
+    }
+    
+    // Then delete the post
+    const { error: postError } = await supabaseAdmin
+      .from('blog_posts')
+      .delete()
+      .eq('id', postId)
+    
+    if (postError) {
+      console.error('Error deleting post:', postError)
+      return NextResponse.json({ 
+        error: 'Failed to delete post',
+        details: postError.message 
+      }, { status: 500 })
+    }
+    
+    return NextResponse.json({ success: true, message: 'Post deleted successfully' })
+  } catch (error) {
+    console.error('API Error:', error)
+    return NextResponse.json({ 
+      error: 'Internal server error',
+      details: error.message 
+    }, { status: 500 })
+  }
+}
