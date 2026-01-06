@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Gamepad2, LayoutDashboard, Server, Users, Ticket, FileText, Image, Settings, LogOut } from 'lucide-react'
+import { Gamepad2, LayoutDashboard, Server, Users, Ticket, FileText, Image, Settings, Palette, FileCode, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 import { toast } from 'sonner'
