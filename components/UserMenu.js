@@ -64,16 +64,16 @@ export default function UserMenu() {
   
   if (!user) {
     return (
-      <div className=\"flex items-center gap-2\">
-        <Link href=\"/auth/login\">
-          <Button variant=\"outline\" size=\"sm\" className=\"border-gray-700 hover:border-green-500\">
-            <LogIn className=\"w-4 h-4 mr-1\" />
+      <div className="flex items-center gap-2">
+        <Link href="/auth/login">
+          <Button variant="outline" size="sm" className="border-gray-700 hover:border-green-500">
+            <LogIn className="w-4 h-4 mr-1" />
             Login
           </Button>
         </Link>
-        <Link href=\"/auth/register\">
-          <Button size=\"sm\" className=\"bg-green-600 hover:bg-green-700\">
-            <UserPlus className=\"w-4 h-4 mr-1\" />
+        <Link href="/auth/register">
+          <Button size="sm" className="bg-green-600 hover:bg-green-700">
+            <UserPlus className="w-4 h-4 mr-1" />
             Sign Up
           </Button>
         </Link>
