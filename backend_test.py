@@ -20,7 +20,9 @@ class MinecraftServerListTester:
         self.test_data = {
             'user_id': None,
             'ticket_id': None,
-            'server_id': None
+            'server_id': None,
+            'category_id': None,
+            'post_id': None
         }
     
     def log_test(self, test_name: str, success: bool, message: str, details: Optional[Dict] = None):
