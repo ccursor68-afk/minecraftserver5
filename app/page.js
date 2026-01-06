@@ -204,11 +204,11 @@ export default function HomePage() {
       <section className="py-4 border-b border-gray-800 bg-gradient-to-r from-gray-900/50 to-gray-800/50">
         <div className="container mx-auto px-4">
           <div className="flex justify-center">
-            {banners.length > 0 ? (
-              <a href={banners[0].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
+            {topBanners.length > 0 ? (
+              <a href={topBanners[0].linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="block">
                 <img 
-                  src={banners[0].imageUrl} 
-                  alt={banners[0].title}
+                  src={topBanners[0].imageUrl} 
+                  alt={topBanners[0].serverName}
                   className="max-w-full h-auto rounded-lg border border-gray-700 hover:border-green-500 transition-colors"
                   style={{ maxHeight: '90px' }}
                 />
