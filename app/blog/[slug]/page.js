@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { use } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Gamepad2, ArrowLeft, BookOpen, MessageSquare, Clock, User, Eye, Pin } from 'lucide-react'
@@ -11,24 +10,38 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 
 export default function CategoryDetailPage({ params }) {
-  const resolvedParams = use(params)
   const router = useRouter()
   const [category, setCategory] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categorySlug, setCategorySlug] = useState(null)
+
+  // Resolve params safely
+  useEffect(() => {
+    if (params && params.slug) {
+      const slug = typeof params.slug === 'string' ? params.slug : params.slug[0]
+      setCategorySlug(slug)
+    }
+  }, [params])
 
   useEffect(() => {
-    fetchCategory()
-    fetchPosts()
-  }, [resolvedParams.slug])
+    if (categorySlug) {
+      fetchCategory()
+      fetchPosts()
+    }
+  }, [categorySlug])
 
   const fetchCategory = async () => {
+    if (!categorySlug) return
+    
     try {
-      const response = await fetch(`/api/blog/categories/${resolvedParams.slug}`)
+      const response = await fetch(`/api/blog/categories/${categorySlug}`)
       if (response.ok) {
         const data = await response.json()
         setCategory(data)
       } else {
+        const errorData = await response.json().catch(() => ({}))
+        console.error('Category fetch error:', errorData)
         toast.error('Kategori bulunamadı')
         router.push('/blog')
       }
@@ -40,17 +53,21 @@ export default function CategoryDetailPage({ params }) {
   }
 
   const fetchPosts = async () => {
+    if (!categorySlug) return
+    
     try {
-      const url = `/api/blog/posts?categorySlug=${encodeURIComponent(resolvedParams.slug)}`
+      const url = `/api/blog/posts?categorySlug=${encodeURIComponent(categorySlug)}`
       console.log('Fetching posts from:', url)
       
       const response = await fetch(url)
       const data = await response.json()
       
-      console.log('Posts response:', { ok: response.ok, status: response.status, data })
+      console.log('Posts response:', { ok: response.ok, status: response.status, data, postCount: Array.isArray(data) ? data.length : 0 })
       
       if (response.ok) {
-        setPosts(Array.isArray(data) ? data : [])
+        const postsArray = Array.isArray(data) ? data : []
+        console.log('Setting posts:', postsArray.length)
+        setPosts(postsArray)
       } else {
         console.error('Error fetching posts:', data)
         toast.error(data.error || 'Postlar yüklenirken hata oluştu')
