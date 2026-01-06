@@ -24,7 +24,7 @@ export async function GET(request) {
       console.log('Looking up category by slug:', categorySlug)
       const { data: category, error: catError } = await supabaseAdmin
         .from('blog_categories')
-        .select('id, slug')
+        .select('id, slug, name')
         .eq('slug', categorySlug)
         .single()
       
@@ -35,8 +35,17 @@ export async function GET(request) {
         return NextResponse.json({ error: 'Category not found', details: catError?.message }, { status: 404 })
       }
       
-      console.log('Filtering posts by categoryId:', category.id)
+      console.log('Filtering posts by categoryId:', category.id, 'for category:', category.name)
       query = query.eq('categoryId', category.id)
+      
+      // Debug: Check all posts first
+      const { data: allPosts } = await supabaseAdmin
+        .from('blog_posts')
+        .select('id, title, categoryId')
+        .limit(10)
+      
+      console.log('Sample posts in database:', allPosts)
+      console.log('Looking for posts with categoryId:', category.id)
     }
     
     // Order posts - try isPinned first, then createdAt, fallback to id
