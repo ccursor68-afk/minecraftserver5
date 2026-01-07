@@ -4,10 +4,15 @@ import { supabaseAdmin } from '../../../../lib/supabase.js'
 // Public endpoint to get all public settings
 export async function GET() {
   try {
+    console.log('[PUBLIC API] Fetching settings from Supabase...')
+    
     const { data: settings, error } = await supabaseAdmin
       .from('site_settings')
       .select('*')
       .single()
+    
+    console.log('[PUBLIC API] Settings:', settings)
+    console.log('[PUBLIC API] Error:', error)
     
     if (error && error.code !== 'PGRST116' && error.code !== 'PGRST205') {
       console.error('Error fetching settings:', error)
@@ -15,10 +20,18 @@ export async function GET() {
     }
     
     if (!settings) {
+      console.log('[PUBLIC API] No settings found, returning defaults')
       return NextResponse.json(getDefaultSettings())
     }
     
-    return NextResponse.json(settings)
+    console.log('[PUBLIC API] Returning settings')
+    return NextResponse.json(settings, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    })
   } catch (error) {
     console.error('API Error:', error)
     return NextResponse.json(getDefaultSettings())
