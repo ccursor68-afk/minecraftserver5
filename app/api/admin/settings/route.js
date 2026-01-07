@@ -99,8 +99,12 @@ export async function PUT(request) {
         secondarycolor: body.secondaryColor || '#eab308',
         accentcolor: body.accentColor || '#3b82f6',
         footertext: body.footerText || '',
-        socialmedia: body.socialMedia || {},
         updatedat: new Date().toISOString()
+      }
+      
+      // Add socialmedia if it exists in body
+      if (body.socialMedia) {
+        updateData.socialmedia = body.socialMedia
       }
       
       console.log('[PUT] Update data:', updateData)
