@@ -96,11 +96,11 @@ export async function PUT(request) {
         title: body.title,
         content: body.content,
         slug: body.slug,
-        metaDescription: body.metaDescription,
-        isPublished: body.isPublished,
-        showInFooter: body.showInFooter,
-        footerOrder: body.footerOrder,
-        updatedAt: new Date().toISOString()
+        metadescription: body.metaDescription,
+        ispublished: body.isPublished,
+        showinfooter: body.showInFooter,
+        footerorder: body.footerOrder,
+        updatedat: new Date().toISOString()
       })
       .eq('id', body.id)
       .select()
