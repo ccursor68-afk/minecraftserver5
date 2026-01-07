@@ -64,13 +64,22 @@ export async function PUT(request) {
   try {
     const body = await request.json()
     
-    // Check if settings exist
-    const { data: existing } = await supabaseAdmin
+    // Check if table exists by trying to select
+    const { data: existing, error: selectError } = await supabaseAdmin
       .from('site_settings')
       .select('id')
       .single()
     
     let result
+    
+    // If table doesn't exist, return error with message
+    if (selectError && selectError.code === 'PGRST205') {
+      return NextResponse.json({ 
+        error: 'Tablo bulunamadı. Lütfen Supabase SQL scriptlerini çalıştırın.',
+        details: 'site_settings tablosu mevcut değil. SETUP.md dosyasındaki SQL scriptlerini çalıştırın.'
+      }, { status: 400 })
+    }
+    
     if (existing) {
       // Update existing settings
       const { data, error } = await supabaseAdmin
@@ -81,6 +90,15 @@ export async function PUT(request) {
           adsEnabled: body.adsEnabled || false,
           analyticsEnabled: body.analyticsEnabled || false,
           adSlots: body.adSlots || {},
+          siteName: body.siteName || 'Minecraft Server List',
+          siteTagline: body.siteTagline || '',
+          logoUrl: body.logoUrl || '',
+          faviconUrl: body.faviconUrl || '',
+          primaryColor: body.primaryColor || '#22c55e',
+          secondaryColor: body.secondaryColor || '#eab308',
+          accentColor: body.accentColor || '#3b82f6',
+          footerText: body.footerText || '',
+          socialMedia: body.socialMedia || {},
           updatedAt: new Date().toISOString()
         })
         .eq('id', existing.id)
@@ -89,7 +107,7 @@ export async function PUT(request) {
       
       if (error) {
         console.error('Error updating settings:', error)
-        return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+        return NextResponse.json({ error: 'Ayarlar güncellenemedi: ' + error.message }, { status: 500 })
       }
       result = data
     } else {
@@ -103,6 +121,15 @@ export async function PUT(request) {
           adsEnabled: body.adsEnabled || false,
           analyticsEnabled: body.analyticsEnabled || false,
           adSlots: body.adSlots || {},
+          siteName: body.siteName || 'Minecraft Server List',
+          siteTagline: body.siteTagline || '',
+          logoUrl: body.logoUrl || '',
+          faviconUrl: body.faviconUrl || '',
+          primaryColor: body.primaryColor || '#22c55e',
+          secondaryColor: body.secondaryColor || '#eab308',
+          accentColor: body.accentColor || '#3b82f6',
+          footerText: body.footerText || '',
+          socialMedia: body.socialMedia || {},
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }])
@@ -111,7 +138,7 @@ export async function PUT(request) {
       
       if (error) {
         console.error('Error creating settings:', error)
-        return NextResponse.json({ error: 'Failed to create settings' }, { status: 500 })
+        return NextResponse.json({ error: 'Ayarlar oluşturulamadı: ' + error.message }, { status: 500 })
       }
       result = data
     }
@@ -119,6 +146,6 @@ export async function PUT(request) {
     return NextResponse.json(result)
   } catch (error) {
     console.error('API Error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Sunucu hatası: ' + error.message }, { status: 500 })
   }
 }
