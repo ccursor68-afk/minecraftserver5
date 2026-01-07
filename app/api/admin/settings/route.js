@@ -85,21 +85,21 @@ export async function PUT(request) {
       const { data, error } = await supabaseAdmin
         .from('site_settings')
         .update({
-          googleAnalyticsId: body.googleAnalyticsId || '',
-          googleAdsClientId: body.googleAdsClientId || '',
-          adsEnabled: body.adsEnabled || false,
-          analyticsEnabled: body.analyticsEnabled || false,
-          adSlots: body.adSlots || {},
-          siteName: body.siteName || 'Minecraft Server List',
-          siteTagline: body.siteTagline || '',
-          logoUrl: body.logoUrl || '',
-          faviconUrl: body.faviconUrl || '',
-          primaryColor: body.primaryColor || '#22c55e',
-          secondaryColor: body.secondaryColor || '#eab308',
-          accentColor: body.accentColor || '#3b82f6',
-          footerText: body.footerText || '',
-          socialMedia: body.socialMedia || {},
-          updatedAt: new Date().toISOString()
+          googleanalyticsid: body.googleAnalyticsId || '',
+          googleadsclientid: body.googleAdsClientId || '',
+          adsenabled: body.adsEnabled || false,
+          analyticsenabled: body.analyticsEnabled || false,
+          adslots: body.adSlots || {},
+          sitename: body.siteName || 'Minecraft Server List',
+          sitetagline: body.siteTagline || '',
+          logourl: body.logoUrl || '',
+          faviconurl: body.faviconUrl || '',
+          primarycolor: body.primaryColor || '#22c55e',
+          secondarycolor: body.secondaryColor || '#eab308',
+          accentcolor: body.accentColor || '#3b82f6',
+          footertext: body.footerText || '',
+          socialmedia: body.socialMedia || {},
+          updatedat: new Date().toISOString()
         })
         .eq('id', existing.id)
         .select()
@@ -116,22 +116,22 @@ export async function PUT(request) {
         .from('site_settings')
         .insert([{
           id: 'main',
-          googleAnalyticsId: body.googleAnalyticsId || '',
-          googleAdsClientId: body.googleAdsClientId || '',
-          adsEnabled: body.adsEnabled || false,
-          analyticsEnabled: body.analyticsEnabled || false,
-          adSlots: body.adSlots || {},
-          siteName: body.siteName || 'Minecraft Server List',
-          siteTagline: body.siteTagline || '',
-          logoUrl: body.logoUrl || '',
-          faviconUrl: body.faviconUrl || '',
-          primaryColor: body.primaryColor || '#22c55e',
-          secondaryColor: body.secondaryColor || '#eab308',
-          accentColor: body.accentColor || '#3b82f6',
-          footerText: body.footerText || '',
-          socialMedia: body.socialMedia || {},
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          googleanalyticsid: body.googleAnalyticsId || '',
+          googleadsclientid: body.googleAdsClientId || '',
+          adsenabled: body.adsEnabled || false,
+          analyticsenabled: body.analyticsEnabled || false,
+          adslots: body.adSlots || {},
+          sitename: body.siteName || 'Minecraft Server List',
+          sitetagline: body.siteTagline || '',
+          logourl: body.logoUrl || '',
+          faviconurl: body.faviconUrl || '',
+          primarycolor: body.primaryColor || '#22c55e',
+          secondarycolor: body.secondaryColor || '#eab308',
+          accentcolor: body.accentColor || '#3b82f6',
+          footertext: body.footerText || '',
+          socialmedia: body.socialMedia || {},
+          createdat: new Date().toISOString(),
+          updatedat: new Date().toISOString()
         }])
         .select()
         .single()
