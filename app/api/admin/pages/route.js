@@ -58,10 +58,10 @@ export async function POST(request) {
         slug: body.slug,
         title: body.title,
         content: body.content,
-        metaDescription: body.metaDescription || '',
-        isPublished: body.isPublished !== undefined ? body.isPublished : true,
-        showInFooter: body.showInFooter !== undefined ? body.showInFooter : false,
-        footerOrder: body.footerOrder || 0
+        metadescription: body.metaDescription || '',
+        ispublished: body.isPublished !== undefined ? body.isPublished : true,
+        showinfooter: body.showInFooter !== undefined ? body.showInFooter : false,
+        footerorder: body.footerOrder || 0
       }])
       .select()
       .single()
