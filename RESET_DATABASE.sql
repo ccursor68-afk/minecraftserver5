@@ -17,7 +17,7 @@ CREATE TABLE site_settings (
   googleadsclientid TEXT DEFAULT '',
   analyticsenabled BOOLEAN DEFAULT FALSE,
   adsenabled BOOLEAN DEFAULT FALSE,
-  adslots JSONB DEFAULT '{}' ::jsonb,
+  adslots JSONB DEFAULT '{}',
   
   -- Tema Ayarları
   sitename TEXT DEFAULT 'Minecraft Server List',
