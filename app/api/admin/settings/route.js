@@ -82,28 +82,38 @@ export async function PUT(request) {
     
     if (existing) {
       // Update existing settings
+      console.log('[PUT] Updating settings for ID:', existing.id)
+      console.log('[PUT] Body:', body)
+      
+      const updateData = {
+        googleanalyticsid: body.googleAnalyticsId || '',
+        googleadsclientid: body.googleAdsClientId || '',
+        adsenabled: body.adsEnabled || false,
+        analyticsenabled: body.analyticsEnabled || false,
+        adslots: body.adSlots || {},
+        sitename: body.siteName || 'Minecraft Server List',
+        sitetagline: body.siteTagline || '',
+        logourl: body.logoUrl || '',
+        faviconurl: body.faviconUrl || '',
+        primarycolor: body.primaryColor || '#22c55e',
+        secondarycolor: body.secondaryColor || '#eab308',
+        accentcolor: body.accentColor || '#3b82f6',
+        footertext: body.footerText || '',
+        socialmedia: body.socialMedia || {},
+        updatedat: new Date().toISOString()
+      }
+      
+      console.log('[PUT] Update data:', updateData)
+      
       const { data, error } = await supabaseAdmin
         .from('site_settings')
-        .update({
-          googleanalyticsid: body.googleAnalyticsId || '',
-          googleadsclientid: body.googleAdsClientId || '',
-          adsenabled: body.adsEnabled || false,
-          analyticsenabled: body.analyticsEnabled || false,
-          adslots: body.adSlots || {},
-          sitename: body.siteName || 'Minecraft Server List',
-          sitetagline: body.siteTagline || '',
-          logourl: body.logoUrl || '',
-          faviconurl: body.faviconUrl || '',
-          primarycolor: body.primaryColor || '#22c55e',
-          secondarycolor: body.secondaryColor || '#eab308',
-          accentcolor: body.accentColor || '#3b82f6',
-          footertext: body.footerText || '',
-          socialmedia: body.socialMedia || {},
-          updatedat: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', existing.id)
         .select()
         .single()
+      
+      console.log('[PUT] Update result:', data)
+      console.log('[PUT] Update error:', error)
       
       if (error) {
         console.error('Error updating settings:', error)
