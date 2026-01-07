@@ -20,19 +20,23 @@ export async function GET(request) {
       query = query.eq('showInFooter', true)
     }
     
-    query = query.order('footerOrder', { ascending: true })
+    query = query.order('footerorder', { ascending: true })
     
     const { data, error } = await query
     
     if (error) {
       console.error('Error fetching pages:', error)
+      // Return empty array if table doesn't exist
+      if (error.code === 'PGRST205' || error.code === '42P01' || error.code === '42703') {
+        return NextResponse.json([])
+      }
       return NextResponse.json({ error: 'Failed to fetch pages' }, { status: 500 })
     }
     
     return NextResponse.json(data || [])
   } catch (error) {
     console.error('API Error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json([])
   }
 }
 
