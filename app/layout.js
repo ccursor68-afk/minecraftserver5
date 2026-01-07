@@ -3,6 +3,7 @@ import './globals.css'
 import { Toaster } from '@/components/ui/sonner'
 import { LanguageProvider } from '@/contexts/LanguageContext'
 import AnalyticsWrapper from '@/components/AnalyticsWrapper'
+import DynamicTheme from '@/components/DynamicTheme'
 
 const inter = Inter({ subsets: ['latin'] })
 
