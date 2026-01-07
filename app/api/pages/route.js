@@ -9,14 +9,14 @@ export async function GET(request) {
   try {
     let query = supabaseAdmin
       .from('custom_pages')
-      .select('id, slug, title, metaDescription, showInFooter, footerOrder')
+      .select('id, slug, title, metadescription, showinfooter, footerorder')
       .eq('isPublished', true)
     
     if (footer === 'true') {
-      query = query.eq('showInFooter', true)
+      query = query.eq('showinfooter', true)
     }
     
-    query = query.order('footerOrder', { ascending: true })
+    query = query.order('footerorder', { ascending: true })
     
     const { data, error } = await query
     
