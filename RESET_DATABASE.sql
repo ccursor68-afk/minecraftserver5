@@ -28,7 +28,7 @@ CREATE TABLE site_settings (
   secondarycolor TEXT DEFAULT '#eab308',
   accentcolor TEXT DEFAULT '#3b82f6',
   footertext TEXT DEFAULT '© 2025 Minecraft Server List',
-  socialmedia JSONB DEFAULT '{"discord":"","twitter":"","facebook":"","instagram":"","youtube":"","tiktok":""}' ::jsonb,
+  socialmedia JSONB DEFAULT '{"discord":"","twitter":"","facebook":"","instagram":"","youtube":"","tiktok":""}',
   
   -- Timestamps
   createdat TIMESTAMP DEFAULT NOW(),
