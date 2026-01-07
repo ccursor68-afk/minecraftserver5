@@ -1,0 +1,16 @@
+{
+  "name": "Minecraft Server List",
+  "short_name": "MC Server List",
+  "description": "En İyi Minecraft Sunucuları",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
