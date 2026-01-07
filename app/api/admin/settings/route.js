@@ -81,74 +81,33 @@ export async function PUT(request) {
     }
     
     if (existing) {
-      // Update existing settings - Basic fields first
-      console.log('[PUT] Updating settings for ID:', existing.id)
-      
+      // Use RPC function to bypass schema cache issues
       try {
-        // Try to update all fields including socialmedia
         const { data, error } = await supabaseAdmin
-          .from('site_settings')
-          .update({
-            googleanalyticsid: body.googleAnalyticsId || '',
-            googleadsclientid: body.googleAdsClientId || '',
-            adsenabled: body.adsEnabled || false,
-            analyticsenabled: body.analyticsEnabled || false,
-            adslots: body.adSlots || {},
-            sitename: body.siteName || 'Minecraft Server List',
-            sitetagline: body.siteTagline || '',
-            logourl: body.logoUrl || '',
-            faviconurl: body.faviconUrl || '',
-            primarycolor: body.primaryColor || '#22c55e',
-            secondarycolor: body.secondaryColor || '#eab308',
-            accentcolor: body.accentColor || '#3b82f6',
-            footertext: body.footerText || '',
-            socialmedia: body.socialMedia || {},
-            updatedat: new Date().toISOString()
+          .rpc('update_site_settings', {
+            p_sitename: body.siteName,
+            p_primarycolor: body.primaryColor,
+            p_secondarycolor: body.secondaryColor,
+            p_accentcolor: body.accentColor,
+            p_logourl: body.logoUrl,
+            p_faviconurl: body.faviconUrl,
+            p_sitetagline: body.siteTagline,
+            p_footertext: body.footerText,
+            p_googleanalyticsid: body.googleAnalyticsId,
+            p_googleadsclientid: body.googleAdsClientId,
+            p_analyticsenabled: body.analyticsEnabled,
+            p_adsenabled: body.adsEnabled
           })
-          .eq('id', existing.id)
-          .select()
-          .single()
         
         if (error) {
-          // If socialmedia column causes error, try without it
-          if (error.message && error.message.includes('socialmedia')) {
-            console.log('[PUT] Retrying without socialmedia column...')
-            const { data: data2, error: error2 } = await supabaseAdmin
-              .from('site_settings')
-              .update({
-                googleanalyticsid: body.googleAnalyticsId || '',
-                googleadsclientid: body.googleAdsClientId || '',
-                adsenabled: body.adsEnabled || false,
-                analyticsenabled: body.analyticsEnabled || false,
-                adslots: body.adSlots || {},
-                sitename: body.siteName || 'Minecraft Server List',
-                sitetagline: body.siteTagline || '',
-                logourl: body.logoUrl || '',
-                faviconurl: body.faviconUrl || '',
-                primarycolor: body.primaryColor || '#22c55e',
-                secondarycolor: body.secondaryColor || '#eab308',
-                accentcolor: body.accentColor || '#3b82f6',
-                footertext: body.footerText || '',
-                updatedat: new Date().toISOString()
-              })
-              .eq('id', existing.id)
-              .select()
-              .single()
-            
-            if (error2) {
-              console.error('Error updating settings (retry):', error2)
-              return NextResponse.json({ error: 'Ayarlar güncellenemedi: ' + error2.message }, { status: 500 })
-            }
-            result = data2
-          } else {
-            console.error('Error updating settings:', error)
-            return NextResponse.json({ error: 'Ayarlar güncellenemedi: ' + error.message }, { status: 500 })
-          }
-        } else {
-          result = data
+          console.error('[PUT] RPC Error:', error)
+          return NextResponse.json({ error: 'Ayarlar güncellenemedi: ' + error.message }, { status: 500 })
         }
+        
+        console.log('[PUT] RPC Success:', data)
+        result = data
       } catch (err) {
-        console.error('Exception updating settings:', err)
+        console.error('[PUT] Exception:', err)
         return NextResponse.json({ error: 'Ayarlar güncellenemedi: ' + err.message }, { status: 500 })
       }
     } else {
