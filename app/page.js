@@ -215,7 +215,7 @@ export default function HomePage() {
             <h2 className="text-5xl font-bold">
               <span className="text-white">{t('home.heroTitle')}</span>
               <br />
-              <span className="text-green-500">{t('home.heroTitle2')}</span>
+              <span style={{ color: colors.primary }}>{t('home.heroTitle2')}</span>
             </h2>
             <p className="text-xl text-gray-400">
               {t('home.heroSubtitle')}
@@ -230,7 +230,8 @@ export default function HomePage() {
                   placeholder={t('home.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-gray-900 border-gray-700 focus:border-green-500 text-white"
+                  className="pl-10 bg-gray-900 border-gray-700 text-white"
+                  style={{ ['--focus-border-color']: colors.primary }}
                 />
               </div>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
