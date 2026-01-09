@@ -142,26 +142,26 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Gamepad2 className="w-8 h-8 text-green-500" />
+              <Gamepad2 className="w-8 h-8" style={{ color: colors.primary }} />
               <div>
-                <h1 className="text-2xl font-bold text-green-500">{t('home.title')}</h1>
+                <h1 className="text-2xl font-bold" style={{ color: colors.primary }}>{t('home.title')}</h1>
                 <p className="text-xs text-gray-400">{t('home.subtitle')}</p>
               </div>
             </div>
             <nav className="hidden md:flex items-center gap-6 text-sm">
-              <Link href="/" className="text-green-500 hover:text-green-400 transition-colors">
+              <Link href="/" style={{ color: colors.primary }} className="hover:opacity-80 transition-opacity">
                 🎮 {t('nav.servers')}
               </Link>
-              <Link href="/blog" className="text-gray-400 hover:text-green-400 transition-colors">
+              <Link href="/blog" className="text-gray-400 hover:opacity-80 transition-opacity" style={{ ['--hover-color']: colors.primary }}>
                 📰 {t('nav.blog')}
               </Link>
               {user && (
-                <Link href="/tickets" className="text-gray-400 hover:text-green-400 transition-colors">
+                <Link href="/tickets" className="text-gray-400 hover:opacity-80 transition-opacity">
                   🎫 {t('nav.support')}
                 </Link>
               )}
               {userRole === 'admin' && (
-                <Link href="/admin" className="text-yellow-500 hover:text-yellow-400 transition-colors">
+                <Link href="/admin" style={{ color: colors.secondary }} className="hover:opacity-80 transition-opacity">
                   <Shield className="w-4 h-4 inline mr-1" />
                   {t('nav.admin')}
                 </Link>
