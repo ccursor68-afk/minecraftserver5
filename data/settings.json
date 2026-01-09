@@ -1,0 +1,24 @@
+{
+  "id": "main",
+  "sitename": "Minecraft Server List",
+  "sitetagline": "En İyi Minecraft Sunucuları",
+  "logourl": "",
+  "faviconurl": "",
+  "primarycolor": "#22c55e",
+  "secondarycolor": "#eab308",
+  "accentcolor": "#3b82f6",
+  "footertext": "© 2025 Minecraft Server List. Tüm hakları saklıdır.",
+  "googleanalyticsid": "",
+  "googleadsclientid": "",
+  "analyticsenabled": false,
+  "adsenabled": false,
+  "adslots": {},
+  "socialmedia": {
+    "discord": "",
+    "twitter": "",
+    "facebook": "",
+    "instagram": "",
+    "youtube": "",
+    "tiktok": ""
+  }
+}
