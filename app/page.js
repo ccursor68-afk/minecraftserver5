@@ -21,6 +21,7 @@ import UserMenu from '@/components/UserMenu'
 import Footer from '@/components/Footer'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useThemeColors } from '@/hooks/useThemeColors'
 
 // Game mode categories
 const GAME_MODES = [
