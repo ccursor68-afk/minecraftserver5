@@ -50,6 +50,7 @@ const PLATFORMS = [
 export default function HomePage() {
   const router = useRouter()
   const { t } = useLanguage()
+  const colors = useThemeColors()
   const [servers, setServers] = useState([])
   const [topBanners, setTopBanners] = useState([])
   const [bottomBanners, setBottomBanners] = useState([])
