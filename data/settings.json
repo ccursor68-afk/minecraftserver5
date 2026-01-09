@@ -4,8 +4,8 @@
   "sitetagline": "En İyi Minecraft Sunucuları",
   "logourl": "",
   "faviconurl": "",
-  "primarycolor": "#ff0000",
-  "secondarycolor": "#eab308",
+  "primarycolor": "#fc0a0a",
+  "secondarycolor": "#19f909",
   "accentcolor": "#3b82f6",
   "footertext": "© 2025 Minecraft Server List. Tüm hakları saklıdır.",
   "googleanalyticsid": "",
@@ -14,11 +14,11 @@
   "adsenabled": false,
   "adslots": {},
   "socialmedia": {
-    "discord": "",
-    "twitter": "",
-    "facebook": "",
-    "instagram": "",
-    "youtube": "",
+    "discord": "https://discord.gg/",
+    "twitter": "https://twitter.com/",
+    "facebook": "https://facebook.com/",
+    "instagram": "https://instagram.com",
+    "youtube": "https://youtube.com/",
     "tiktok": ""
   }
 }
