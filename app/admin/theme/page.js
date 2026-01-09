@@ -57,7 +57,7 @@ export default function ThemeSettingsPage() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      const response = await fetch('/api/admin/settings', {
+      const response = await fetch('/api/admin/settings-file', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(settings)
