@@ -38,13 +38,13 @@ export default function ThemeSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/admin/settings')
+      const response = await fetch('/api/admin/settings-file')
       if (response.ok) {
         const data = await response.json()
         setSettings(prev => ({
           ...prev,
           ...data,
-          socialMedia: data.socialMedia || prev.socialMedia
+          socialMedia: data.socialmedia || prev.socialMedia
         }))
       }
     } catch (error) {
