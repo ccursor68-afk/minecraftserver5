@@ -14,7 +14,7 @@ export default function ThemeTestPage() {
 
   const fetchSettings = async () => {
     try {
-      const response = await fetch('/api/settings/public')
+      const response = await fetch('/api/settings/public-file')
       if (response.ok) {
         const data = await response.json()
         setSettings(data)
