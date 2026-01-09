@@ -17,7 +17,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Apply dynamic theme colors */
+/* Dynamic theme colors */
 .text-primary {
     color: var(--color-primary) !important;
 }
@@ -44,6 +44,46 @@ body {
 
 .bg-accent {
     background-color: var(--color-accent) !important;
+}
+
+/* Override green-500 with dynamic primary color */
+.text-green-500 {
+    color: var(--color-primary) !important;
+}
+
+.bg-green-600,
+.bg-green-700 {
+    background-color: var(--color-primary) !important;
+}
+
+.hover\:bg-green-700:hover {
+    opacity: 0.9;
+}
+
+.border-green-500,
+.border-green-600,
+.border-green-800 {
+    border-color: var(--color-primary) !important;
+}
+
+.text-green-400 {
+    color: var(--color-primary) !important;
+    opacity: 0.8;
+}
+
+.hover\:text-green-400:hover {
+    color: var(--color-primary) !important;
+    opacity: 0.8;
+}
+
+.hover\:border-green-500:hover {
+    border-color: var(--color-primary) !important;
+}
+
+/* Shadow override */
+.shadow-green-500\/10 {
+    --tw-shadow-color: var(--color-primary);
+    opacity: 0.1;
 }
 
 code {
