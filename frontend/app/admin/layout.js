@@ -96,6 +96,19 @@ export default function AdminLayout({ children }) {
     )
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-500 mb-4">{error}</p>
+          <Button onClick={() => router.push('/')} variant="outline">
+            Go Home
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   if (!user || userRole !== 'admin') {
     return null
   }
