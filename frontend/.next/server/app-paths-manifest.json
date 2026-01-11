@@ -1,10 +1,4 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
-  "/api/banners/active/route": "app/api/banners/active/route.js",
-  "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
-  "/api/servers/route": "app/api/servers/route.js",
-  "/api/settings/public/route": "app/api/settings/public/route.js",
-  "/api/profile/route": "app/api/profile/route.js",
-  "/api/[[...path]]/route": "app/api/[[...path]]/route.js"
+  "/api/servers/route": "app/api/servers/route.js"
 }
