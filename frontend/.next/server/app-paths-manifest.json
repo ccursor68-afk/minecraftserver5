@@ -1,3 +1,6 @@
 {
+  "/hostings/page": "app/hostings/page.js",
+  "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
+  "/api/settings/public/route": "app/api/settings/public/route.js",
   "/api/hostings/route": "app/api/hostings/route.js"
 }
