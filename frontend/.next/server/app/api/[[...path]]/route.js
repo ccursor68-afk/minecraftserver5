@@ -13,7 +13,7 @@ exports.id = "app/api/[[...path]]/route";
 exports.ids = ["app/api/[[...path]]/route"];
 exports.modules = {
 
-/***/ "./action-async-storage.external":
+/***/ "./action-async-storage.external?8dda":
 /*!*******************************************************************************!*\
   !*** external "next/dist/client/components/action-async-storage.external.js" ***!
   \*******************************************************************************/
@@ -23,7 +23,7 @@ module.exports = require("next/dist/client/components/action-async-storage.exter
 
 /***/ }),
 
-/***/ "./request-async-storage.external":
+/***/ "./request-async-storage.external?3d59":
 /*!********************************************************************************!*\
   !*** external "next/dist/client/components/request-async-storage.external.js" ***!
   \********************************************************************************/
@@ -33,7 +33,7 @@ module.exports = require("next/dist/client/components/request-async-storage.exte
 
 /***/ }),
 
-/***/ "./static-generation-async-storage.external":
+/***/ "./static-generation-async-storage.external?16bc":
 /*!******************************************************************************************!*\
   !*** external "next/dist/client/components/static-generation-async-storage.external.js" ***!
   \******************************************************************************************/
@@ -120,7 +120,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 var __webpack_require__ = require("../../../webpack-runtime.js");
 __webpack_require__.C(exports);
 var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/next","vendor-chunks/@supabase","vendor-chunks/tslib","vendor-chunks/iceberg-js","vendor-chunks/cookie"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2F%5B%5B...path%5D%5D%2Froute&page=%2Fapi%2F%5B%5B...path%5D%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2F%5B%5B...path%5D%5D%2Froute.js&appDir=%2Fapp%2Ffrontend%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp%2Ffrontend&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
+var __webpack_exports__ = __webpack_require__.X(0, ["vendor-chunks/@supabase","vendor-chunks/next","vendor-chunks/tslib","vendor-chunks/iceberg-js","vendor-chunks/cookie"], () => (__webpack_exec__("(rsc)/./node_modules/next/dist/build/webpack/loaders/next-app-loader.js?name=app%2Fapi%2F%5B%5B...path%5D%5D%2Froute&page=%2Fapi%2F%5B%5B...path%5D%5D%2Froute&appPaths=&pagePath=private-next-app-dir%2Fapi%2F%5B%5B...path%5D%5D%2Froute.js&appDir=%2Fapp%2Ffrontend%2Fapp&pageExtensions=tsx&pageExtensions=ts&pageExtensions=jsx&pageExtensions=js&rootDir=%2Fapp%2Ffrontend&isDev=true&tsconfigPath=tsconfig.json&basePath=&assetPrefix=&nextConfigOutput=&preferredRegion=&middlewareConfig=e30%3D!")));
 module.exports = __webpack_exports__;
 
 })();

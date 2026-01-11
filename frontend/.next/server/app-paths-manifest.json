@@ -1,3 +1,6 @@
 {
-  "/api/[[...path]]/route": "app/api/[[...path]]/route.js"
+  "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
+  "/api/settings/public/route": "app/api/settings/public/route.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/admin/page": "app/admin/page.js"
 }
