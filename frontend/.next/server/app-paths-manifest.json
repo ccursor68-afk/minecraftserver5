@@ -1,6 +1,9 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/hostings/page": "app/hostings/page.js",
+  "/page": "app/page.js",
   "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
   "/api/settings/public/route": "app/api/settings/public/route.js",
-  "/api/hostings/route": "app/api/hostings/route.js"
+  "/api/servers/route": "app/api/servers/route.js",
+  "/api/banners/active/route": "app/api/banners/active/route.js"
 }
