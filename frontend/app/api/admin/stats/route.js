@@ -13,21 +13,29 @@ export async function GET() {
       console.error('Error fetching servers count:', serversError)
     }
     
-    // Fetch users count from auth.users via profiles table or directly
+    // Fetch users count from auth.users via users table or directly
     let usersCount = 0
     try {
       const { count, error: usersError } = await supabaseAdmin
-        .from('profiles')
+        .from('users')
         .select('*', { count: 'exact', head: true })
       
       if (!usersError) {
         usersCount = count || 0
       } else {
-        console.error('Error fetching users count from profiles:', usersError)
-        // Fallback: try to get from auth.users
-        const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers()
-        if (!authError && authUsers) {
-          usersCount = authUsers.users?.length || 0
+        console.error('Error fetching users count from users:', usersError)
+        // Fallback: try profiles table
+        const { count: profilesCount, error: profilesError } = await supabaseAdmin
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+        if (!profilesError) {
+          usersCount = profilesCount || 0
+        } else {
+          // Last fallback: try to get from auth.users
+          const { data: authUsers, error: authError } = await supabaseAdmin.auth.admin.listUsers()
+          if (!authError && authUsers) {
+            usersCount = authUsers.users?.length || 0
+          }
         }
       }
     } catch (e) {
