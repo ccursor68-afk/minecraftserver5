@@ -25,7 +25,8 @@ export async function GET(request) {
     if (error) {
       console.error('Error fetching hostings:', error)
       // If table doesn't exist, return empty array
-      if (error.code === '42P01' || error.message?.includes('does not exist')) {
+      if (error.code === 'PGRST205' || error.code === '42P01' || error.message?.includes('does not exist')) {
+        console.log('Hostings table does not exist yet, returning empty array')
         return NextResponse.json([])
       }
       return NextResponse.json({ error: 'Failed to fetch hostings' }, { status: 500 })
@@ -34,7 +35,7 @@ export async function GET(request) {
     return NextResponse.json(data || [])
   } catch (error) {
     console.error('API Error:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json([])
   }
 }
 
