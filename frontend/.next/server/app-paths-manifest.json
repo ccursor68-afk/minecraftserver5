@@ -1,5 +1,10 @@
 {
-  "/page": "app/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/auth/login/page": "app/auth/login/page.js",
-  "/api/admin/stats/route": "app/api/admin/stats/route.js"
+  "/page": "app/page.js",
+  "/api/admin/stats/route": "app/api/admin/stats/route.js",
+  "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
+  "/api/settings/public/route": "app/api/settings/public/route.js",
+  "/api/servers/route": "app/api/servers/route.js",
+  "/api/banners/active/route": "app/api/banners/active/route.js"
 }
