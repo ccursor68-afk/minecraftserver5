@@ -23,7 +23,7 @@ export async function GET(request) {
       // Use supabaseAdmin to bypass RLS
       const { data, error } = await supabaseAdmin
         .from('users')
-        .select('id, email, role, isActive')
+        .select('id, email, role, isActive, minecraftUsername, avatarUrl')
         .eq('id', userId)
         .single()
       
@@ -38,7 +38,14 @@ export async function GET(request) {
         })
       }
       
-      return NextResponse.json(data)
+      return NextResponse.json({
+        id: data.id,
+        email: data.email || '',
+        role: data.role || 'user',
+        isActive: data.isActive !== false,
+        minecraftUsername: data.minecraftUsername,
+        avatarUrl: data.avatarUrl
+      })
     } catch (error) {
       console.error('API Error:', error)
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
