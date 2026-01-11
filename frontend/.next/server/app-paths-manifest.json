@@ -2,5 +2,8 @@
   "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
   "/auth/login/page": "app/auth/login/page.js",
+  "/api/settings/public-file/route": "app/api/settings/public-file/route.js",
+  "/api/settings/public/route": "app/api/settings/public/route.js",
+  "/api/banners/active/route": "app/api/banners/active/route.js",
   "/api/servers/route": "app/api/servers/route.js"
 }
