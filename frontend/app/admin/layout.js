@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Gamepad2, LayoutDashboard, Server, Users, Ticket, FileText, Image, Settings, Palette, FileCode, LogOut } from 'lucide-react'
+import { Gamepad2, LayoutDashboard, Server, Users, Ticket, FileText, Image, Settings, Palette, FileCode, LogOut, MonitorCog } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 import { toast } from 'sonner'
@@ -116,6 +116,7 @@ export default function AdminLayout({ children }) {
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/servers', label: 'Servers', icon: Server },
+    { href: '/admin/hostings', label: 'Hostingler', icon: MonitorCog },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/tickets', label: 'Support', icon: Ticket },
     { href: '/admin/blog', label: 'Blog', icon: FileText },
@@ -129,11 +130,11 @@ export default function AdminLayout({ children }) {
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
       <aside className="fixed left-0 top-0 h-full w-64 bg-black border-r border-gray-800 z-50">
         <div className="p-4">
-          <Link href="/" className="flex items-center gap-2 mb-8">
-            <Gamepad2 className="w-8 h-8 text-yellow-500" />
+          <Link href="/" className="flex items-center gap-3 mb-8">
+            <img src="/logo.png" alt="ServerListRank" className="w-10 h-10 object-contain" />
             <div>
               <h1 className="text-xl font-bold text-yellow-500">ADMIN PANEL</h1>
-              <p className="text-xs text-gray-400">Management Panel</p>
+              <p className="text-xs text-gray-400">ServerListRank</p>
             </div>
           </Link>
 

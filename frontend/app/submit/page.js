@@ -666,11 +666,11 @@ export default function SubmitServerPage() {
       <header className="border-b border-gray-800 bg-[#0a0a0a]/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <ArrowLeft className="w-5 h-5 text-green-500" />
-              <Gamepad2 className="w-8 h-8 text-green-500" />
+              <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
               <div>
-                <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
+                <h1 className="text-2xl font-bold text-green-500">ServerListRank</h1>
               </div>
             </Link>
             <LanguageSwitcher />

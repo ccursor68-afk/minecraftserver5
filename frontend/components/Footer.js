@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Gamepad2, Mail, MessageCircle, Heart } from 'lucide-react'
+import { Mail, MessageCircle, Heart } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export default function Footer() {
@@ -13,9 +13,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo & Description */}
           <div className="col-span-1 md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <Gamepad2 className="w-8 h-8 text-green-500" />
-              <span className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</span>
+            <Link href="/" className="flex items-center gap-3 mb-4">
+              <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
+              <span className="text-2xl font-bold text-green-500">ServerListRank</span>
             </Link>
             <p className="text-gray-400 text-sm mb-4">
               {t('footer.description')}
@@ -84,13 +84,13 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-sm text-center md:text-left">
-              © {new Date().getFullYear()} Minecraft Server List. {t('footer.rights')}
+              © {new Date().getFullYear()} ServerListRank. {t('footer.rights')}
             </p>
             
             {/* Social Links */}
             <div className="flex items-center gap-4">
               <a 
-                href="mailto:support@minecraftserverlist.com" 
+                href="mailto:support@serverlistrank.com" 
                 className="text-gray-400 hover:text-green-500 transition-colors"
                 aria-label="E-posta"
               >

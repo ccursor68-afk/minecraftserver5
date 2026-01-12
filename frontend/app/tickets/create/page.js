@@ -21,7 +21,7 @@ import { createBrowserSupabaseClient } from '@/lib/supabase'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useSearchParams } from 'next/navigation'
 
-const CATEGORIES = ['general', 'server_report', 'server_removal', 'account', 'technical', 'purchase', 'other']
+const CATEGORIES = ['general', 'server_report', 'server_removal', 'hosting_application', 'account', 'technical', 'purchase', 'other']
 const PRIORITIES = ['low', 'normal', 'high']
 
 export default function CreateTicketPage() {
@@ -50,6 +50,13 @@ export default function CreateTicketPage() {
         category: 'purchase',
         subject: `${packageParam.charAt(0).toUpperCase() + packageParam.slice(1)} Paket Satın Alma`,
         message: `Merhaba,\n\n${packageParam.charAt(0).toUpperCase() + packageParam.slice(1)} paketini satın almak istiyorum.\n\nLütfen benimle iletişime geçin.\n\nTeşekkürler.`
+      }))
+    } else if (categoryParam === 'hosting_application') {
+      setFormData(prev => ({
+        ...prev,
+        category: 'hosting_application',
+        subject: 'Hosting Firması Listeleme Başvurusu',
+        message: `Merhaba,\n\nHosting firmamızı sitenizde listelemek istiyoruz.\n\n📌 Firma Bilgileri:\n- Firma Adı: \n- Website: \n- Kısa Açıklama: \n\n🎯 Sunulan Hizmetler:\n- \n- \n\n💰 Fiyat Aralığı:\n- Minimum: TL/ay\n- Maximum: TL/ay\n\n📧 İletişim:\n- E-posta: \n- Telefon: \n\n🖼️ Logo URL (varsa): \n\nTeşekkürler.`
       }))
     }
   }, [searchParams])
@@ -130,11 +137,11 @@ export default function CreateTicketPage() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-[#0a0a0a]/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <Link href="/tickets" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/tickets" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <ArrowLeft className="w-5 h-5 text-green-500" />
-            <Gamepad2 className="w-8 h-8 text-green-500" />
+            <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
             <div>
-              <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
+              <h1 className="text-2xl font-bold text-green-500">ServerListRank</h1>
               <p className="text-xs text-gray-400">{t('tickets.createTicket')}</p>
             </div>
           </Link>
@@ -160,6 +167,7 @@ export default function CreateTicketPage() {
                     <SelectItem value="general">{t('tickets.generalQuestion')}</SelectItem>
                     <SelectItem value="server_report">{t('tickets.reportServer')}</SelectItem>
                     <SelectItem value="server_removal">{t('tickets.serverRemoval')}</SelectItem>
+                    <SelectItem value="hosting_application">{t('tickets.hostingApplication')}</SelectItem>
                     <SelectItem value="account">{t('tickets.accountIssue')}</SelectItem>
                     <SelectItem value="technical">{t('tickets.technicalProblem')}</SelectItem>
                     <SelectItem value="purchase">{t('tickets.purchase')}</SelectItem>
@@ -167,6 +175,24 @@ export default function CreateTicketPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Hosting Application Info */}
+              {formData.category === 'hosting_application' && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                  <h3 className="text-green-500 font-semibold mb-2">🖥️ Hosting Başvurusu</h3>
+                  <p className="text-gray-400 text-sm mb-3">
+                    Hosting firmanızı listelemek için lütfen aşağıdaki bilgileri mesaj kısmında belirtin:
+                  </p>
+                  <ul className="text-gray-400 text-sm space-y-1 list-disc list-inside">
+                    <li>Hosting firma adı</li>
+                    <li>Website adresi</li>
+                    <li>Sunulan hizmetler ve özellikler</li>
+                    <li>Fiyat aralığı</li>
+                    <li>İletişim bilgileri</li>
+                    <li>Logo URL (varsa)</li>
+                  </ul>
+                </div>
+              )}
 
               {(formData.category === 'server_report' || formData.category === 'server_removal') && (
                 <div>

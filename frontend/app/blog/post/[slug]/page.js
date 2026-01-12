@@ -236,10 +236,10 @@ export default async function PostDetailPage({ params }) {
                 <Link href={post.category ? `/blog/${post.category.slug}` : '/blog'} className="text-gray-400 hover:text-green-500">
                   <ArrowLeft className="w-5 h-5" />
                 </Link>
-                <Link href="/blog" className="flex items-center gap-2">
-                  <Gamepad2 className="w-8 h-8 text-green-500" />
+                <Link href="/blog" className="flex items-center gap-3">
+                  <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
                   <div>
-                    <h1 className="text-2xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
+                    <h1 className="text-2xl font-bold text-green-500">ServerListRank</h1>
                     <p className="text-xs text-gray-400">Blog & Forum</p>
                   </div>
                 </Link>

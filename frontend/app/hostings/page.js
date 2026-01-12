@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Star, Server, Zap, HeadphonesIcon, Coins, ExternalLink, ChevronRight, Award, TrendingUp, Search, Filter } from 'lucide-react'
+import { Star, Server, Zap, HeadphonesIcon, Coins, ExternalLink, ChevronRight, Award, TrendingUp, Search, Filter, PlusCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -200,10 +200,10 @@ export default function HostingsPage() {
       <header className="border-b border-gray-800 bg-black/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <Server className="w-8 h-8 text-green-500" />
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
               <div>
-                <h1 className="text-xl font-bold text-green-500">MINECRAFT SERVER LIST</h1>
+                <h1 className="text-xl font-bold text-green-500">ServerListRank</h1>
                 <p className="text-xs text-gray-400">En İyi Minecraft Sunucuları</p>
               </div>
             </Link>
@@ -233,10 +233,23 @@ export default function HostingsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
             En İyi <span className="text-green-500">Minecraft Hosting</span> Firmaları
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-6">
             Kullanıcı değerlendirmelerine göre en iyi Minecraft sunucu hosting firmalarını keşfedin.
             Performans, destek ve fiyat/performans oranına göre karşılaştırın.
           </p>
+          
+          {/* Hosting Application CTA */}
+          <div className="mb-8">
+            <Link href="/tickets/create?category=hosting_application">
+              <Button className="bg-yellow-600 hover:bg-yellow-700 text-black font-semibold">
+                <PlusCircle className="w-5 h-5 mr-2" />
+                Hosting Firmanızı Ekleyin
+              </Button>
+            </Link>
+            <p className="text-gray-500 text-sm mt-2">
+              Hosting firmanızı listelemek için başvuru yapın
+            </p>
+          </div>
           
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4 max-w-2xl mx-auto">

@@ -245,13 +245,13 @@ export default function HomePage() {
       <header className="border-b border-gray-800 bg-[#0a0a0a]/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Gamepad2 className="w-8 h-8 text-green-500" />
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/logo.png" alt="ServerListRank" className="w-11 h-11 object-contain" />
               <div>
-                <h1 className="text-2xl font-bold text-green-500">{t('home.title')}</h1>
+                <h1 className="text-2xl font-bold text-green-500">ServerListRank</h1>
                 <p className="text-xs text-gray-400">{t('home.subtitle')}</p>
               </div>
-            </div>
+            </Link>
             <nav className="hidden md:flex items-center gap-6 text-sm">
               <Link href="/" className="text-green-500 hover:text-green-400 transition-colors">
                 🎮 {t('nav.servers')}

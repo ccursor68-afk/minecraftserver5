@@ -14,7 +14,7 @@
     "logout": "Çıkış Yap"
   },
   "home": {
-    "title": "MINECRAFT SERVER LIST",
+    "title": "ServerListRank",
     "subtitle": "En İyi Minecraft Sunucuları 2025",
     "heroTitle": "En İyi",
     "heroTitle2": "Minecraft Sunucularını",
@@ -60,6 +60,7 @@
     "generalQuestion": "Genel Soru",
     "reportServer": "Sunucu Rapor Et",
     "serverRemoval": "Sunucu Kaldırma Talebi",
+    "hostingApplication": "Hosting Başvurusu",
     "accountIssue": "Hesap Sorunu",
     "technicalProblem": "Teknik Problem",
     "other": "Diğer",
@@ -239,7 +240,9 @@
     "accountCreated": "Hesap oluşturuldu! Giriş yapılıyor...",
     "loginSuccess": "Tekrar hoş geldiniz!",
     "loginFailed": "Giriş başarısız",
-    "registrationFailed": "Kayıt başarısız"
+    "registrationFailed": "Kayıt başarısız",
+    "notRobot": "Ben robot değilim",
+    "verifyHuman": "Lütfen robot olmadığınızı doğrulayın"
   },
   "submit": {
     "title": "Sunucu Gönder",

@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Gamepad2, Mail, Lock, User, Loader2, ArrowLeft } from 'lucide-react'
+import { Gamepad2, Mail, Lock, User, Loader2, ArrowLeft, ShieldCheck } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import { createBrowserSupabaseClient } from '@/lib/supabase'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -17,6 +18,7 @@ export default function RegisterPage() {
   const router = useRouter()
   const { t } = useLanguage()
   const [loading, setLoading] = useState(false)
+  const [isHuman, setIsHuman] = useState(false)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -25,6 +27,11 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
+    if (!isHuman) {
+      toast.error(t('auth.verifyHuman') || 'Lütfen robot olmadığınızı doğrulayın')
+      return
+    }
     
     if (formData.password !== formData.confirmPassword) {
       toast.error(t('auth.passwordsNotMatch'))
@@ -99,7 +106,7 @@ export default function RegisterPage() {
             {t('auth.backToHome')}
           </Link>
           <div className="flex justify-center mb-4">
-            <Gamepad2 className="w-12 h-12 text-green-500" />
+            <img src="/logo.png" alt="ServerListRank" className="w-14 h-14 object-contain" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">{t('auth.createAccount')}</h1>
           <p className="text-gray-400">{t('auth.joinCommunity')}</p>
@@ -154,6 +161,25 @@ export default function RegisterPage() {
                   className="pl-10 bg-gray-900 border-gray-700"
                   placeholder="••••••••"
                 />
+              </div>
+            </div>
+
+            {/* Bot Verification */}
+            <div className="flex items-center space-x-3 p-4 bg-gray-900/50 border border-gray-700 rounded-lg">
+              <Checkbox 
+                id="human-verify" 
+                checked={isHuman}
+                onCheckedChange={setIsHuman}
+                className="border-gray-600 data-[state=checked]:bg-green-600 data-[state=checked]:border-green-600"
+              />
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-green-500" />
+                <Label 
+                  htmlFor="human-verify" 
+                  className="text-sm text-gray-300 cursor-pointer select-none"
+                >
+                  {t('auth.notRobot') || 'Ben robot değilim'}
+                </Label>
               </div>
             </div>
 

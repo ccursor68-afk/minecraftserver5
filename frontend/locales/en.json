@@ -14,7 +14,7 @@
     "logout": "Logout"
   },
   "home": {
-    "title": "MINECRAFT SERVER LIST",
+    "title": "ServerListRank",
     "subtitle": "Best Minecraft Servers 2025",
     "heroTitle": "Find the Best",
     "heroTitle2": "Minecraft Servers",
@@ -60,6 +60,7 @@
     "generalQuestion": "General Question",
     "reportServer": "Report a Server",
     "serverRemoval": "Request Server Removal",
+    "hostingApplication": "Hosting Application",
     "accountIssue": "Account Issue",
     "technicalProblem": "Technical Problem",
     "other": "Other",
@@ -239,7 +240,9 @@
     "accountCreated": "Account created! Logging you in...",
     "loginSuccess": "Welcome back!",
     "loginFailed": "Login failed",
-    "registrationFailed": "Registration failed"
+    "registrationFailed": "Registration failed",
+    "notRobot": "I am not a robot",
+    "verifyHuman": "Please verify that you are not a robot"
   },
   "submit": {
     "title": "Submit Your Server",

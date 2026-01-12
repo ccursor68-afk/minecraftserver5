@@ -8,13 +8,14 @@ import DynamicTheme from '@/components/DynamicTheme'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://minecraftserverlist.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://serverlistrank.com'),
   title: {
-    default: 'Minecraft Server List - En İyi Minecraft Sunucuları 2025 | Best MC Servers',
-    template: '%s | Minecraft Server List'
+    default: 'ServerListRank - En İyi Minecraft Sunucuları 2025 | Best MC Servers',
+    template: '%s | ServerListRank'
   },
   description: 'En iyi Minecraft sunucularını keşfedin! Survival, Skyblock, PvP, Bedwars ve daha fazla oyun modu. Türkçe ve yabancı sunucular için oy verin. Find and vote for the best Minecraft servers.',
   keywords: [
+    'serverlistrank',
     'minecraft server list',
     'minecraft sunucu',
     'minecraft server',
@@ -29,9 +30,9 @@ export const metadata = {
     'minecraft server list turkish',
     'minecraft sunucu listesi'
   ],
-  authors: [{ name: 'Minecraft Server List' }],
-  creator: 'Minecraft Server List',
-  publisher: 'Minecraft Server List',
+  authors: [{ name: 'ServerListRank' }],
+  creator: 'ServerListRank',
+  publisher: 'ServerListRank',
   formatDetection: {
     email: false,
     address: false,
@@ -42,24 +43,24 @@ export const metadata = {
     locale: 'tr_TR',
     alternateLocale: ['en_US'],
     url: '/',
-    siteName: 'Minecraft Server List',
-    title: 'Minecraft Server List - En İyi MC Sunucuları 2025',
+    siteName: 'ServerListRank',
+    title: 'ServerListRank - En İyi MC Sunucuları 2025',
     description: 'En iyi Minecraft sunucularını keşfedin! Türkçe ve yabancı sunucular, tüm oyun modları.',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Minecraft Server List'
+        alt: 'ServerListRank'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Minecraft Server List - Best MC Servers 2025',
+    title: 'ServerListRank - Best MC Servers 2025',
     description: 'Find the best Minecraft servers! Turkish and international servers, all game modes.',
     images: ['/og-image.png'],
-    creator: '@minecraftserverlist'
+    creator: '@serverlistrank'
   },
   robots: {
     index: true,
