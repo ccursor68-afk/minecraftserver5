@@ -1,31 +1,29 @@
 import { createClient } from '@supabase/supabase-js'
-import { createBrowserClient, createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
 /* ------------------------------------------------------------------ */
-/* SAFETY CHECK (BUILD KIRMAZ)                                         */
+/* SAFETY CHECK                                                       */
 /* ------------------------------------------------------------------ */
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn(
-    '⚠️ Supabase env variables missing. Check .env.local file.'
-  )
+  console.warn('⚠️ Supabase env variables missing. Check .env.local')
 }
 
 /* ------------------------------------------------------------------ */
-/* PUBLIC / LEGACY CLIENT (SAFE)                                       */
+/* PUBLIC CLIENT (SAFE FOR CLIENT + SERVER)                            */
 /* ------------------------------------------------------------------ */
 
-export const supabase = supabaseUrl && supabaseAnonKey
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null
+export const supabase =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null
 
 /* ------------------------------------------------------------------ */
 /* ADMIN CLIENT (SERVER ONLY)                                          */
+/* ⚠️ API ROUTES / SERVER ACTIONS ONLY                                 */
 /* ------------------------------------------------------------------ */
 
 export const supabaseAdmin =
@@ -43,47 +41,6 @@ export const supabaseAdmin =
     : null
 
 /* ------------------------------------------------------------------ */
-/* BROWSER CLIENT (CLIENT COMPONENTS)                                  */
-/* ------------------------------------------------------------------ */
-
-export function createBrowserSupabaseClient() {
-  if (!supabaseUrl || !supabaseAnonKey) return null
-
-  return createBrowserClient(
-    supabaseUrl,
-    supabaseAnonKey
-  )
-}
-
-/* ------------------------------------------------------------------ */
-/* SERVER CLIENT (API / SERVER COMPONENTS)                             */
-/* ------------------------------------------------------------------ */
-
-export function createServerSupabaseClient() {
-  if (!supabaseUrl || !supabaseAnonKey) return null
-
-  const cookieStore = cookies()
-
-  return createServerClient(
-    supabaseUrl,
-    supabaseAnonKey,
-    {
-      cookies: {
-        get(name) {
-          return cookieStore.get(name)?.value
-        },
-        set(name, value, options) {
-          cookieStore.set({ name, value, ...options })
-        },
-        remove(name, options) {
-          cookieStore.set({ name, value: '', ...options })
-        },
-      },
-    }
-  )
-}
-
-/* ------------------------------------------------------------------ */
 /* DATABASE CHECK                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -97,26 +54,26 @@ export const checkDatabase = async () => {
       .limit(1)
 
     return !error
-  } catch (error) {
-    console.error('Database connection error:', error)
+  } catch (err) {
+    console.error('Database connection error:', err)
     return false
   }
 }
 
 /* ------------------------------------------------------------------ */
-/* MOCK DATA INITIALIZER (DEV ONLY)                                    */
+/* MOCK DATA (DEV ONLY)                                                */
 /* ------------------------------------------------------------------ */
 
 export const initializeMockData = async () => {
   if (!supabase) return
 
   try {
-    const { data: existing } = await supabase
+    const { data } = await supabase
       .from('servers')
       .select('id')
       .limit(1)
 
-    if (existing && existing.length > 0) return
+    if (data && data.length > 0) return
 
     const mockServers = [
       {
@@ -139,10 +96,8 @@ export const initializeMockData = async () => {
       .from('servers')
       .insert(mockServers)
 
-    if (error) {
-      console.error('Mock insert error:', error)
-    }
-  } catch (error) {
-    console.error('Mock init error:', error)
+    if (error) console.error('Mock insert error:', error)
+  } catch (err) {
+    console.error('Mock init error:', err)
   }
 }
