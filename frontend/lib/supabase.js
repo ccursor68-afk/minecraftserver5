@@ -101,3 +101,34 @@ export const initializeMockData = async () => {
     console.error('Mock init error:', err)
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* BROWSER CLIENT (CLIENT-SIDE ONLY)                                  */
+/* ------------------------------------------------------------------ */
+
+export const createBrowserSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('⚠️ Supabase env variables missing. Check .env.local')
+    return null
+  }
+  
+  return createClient(supabaseUrl, supabaseAnonKey)
+}
+
+/* ------------------------------------------------------------------ */
+/* SERVER CLIENT (SERVER-SIDE ONLY)                                   */
+/* ------------------------------------------------------------------ */
+
+export const createServerSupabaseClient = () => {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('⚠️ Supabase env variables missing. Check .env.local')
+    return null
+  }
+  
+  return createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
+    },
+  })
+}
